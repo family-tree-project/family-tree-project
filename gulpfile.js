@@ -36,6 +36,11 @@ gulp.task('styles:dev', function() {
 //   gulp.watch('app/**/styles/*.css', ['styles:dev']);
 // });
 
+gulp.task('images:dev', function() {
+  gulp.src('app/images/leaflet/*.png')
+  .pipe(gulp.dest('build/images/leaflet/'));
+});
+
 gulp.task('scripts:dev', function() {
   return gulp.src('app/js/**/*.js')
   .pipe(gulp.dest('build/js/'));
@@ -51,5 +56,5 @@ gulp.task('webpack:test', function() {
   .pipe(gulp.dest('test/client/'));
 });
 
-gulp.task('build:dev', ['webpack:dev', 'static:dev', 'styles:dev', 'scripts:dev', 'images:dev']);
+gulp.task('build:dev', ['webpack:dev', 'static:dev', 'styles:dev', 'images:dev']);
 gulp.task('default', ['build:dev']);
