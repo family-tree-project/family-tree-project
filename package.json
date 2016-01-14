@@ -1,0 +1,48 @@
+{
+  "name": "family-tree-project",
+  "version": "0.1.0",
+  "description": "A family tree visualizer and story map generator",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/family-tree-project/family-tree-project.git"
+  },
+  "author": "Matthew Ringel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/family-tree-project/family-tree-project/issues"
+  },
+  "homepage": "https://github.com/family-tree-project/family-tree-project#readme",
+  "devDependencies": {
+    "angular": "^1.4.8",
+    "angular-mocks": "^1.4.8",
+    "chai": "^3.4.1",
+    "chai-http": "^1.0.0",
+    "gulp": "^3.9.0",
+    "gulp-concat-css": "^2.2.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-minify-css": "^1.2.3",
+    "gulp-mocha": "^2.2.0",
+    "gulp-sass": "^2.1.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "jasmine-core": "^2.4.1",
+    "jshint": "^2.8.0",
+    "karma": "^0.13.19",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.3",
+    "mocha": "^2.3.4",
+    "nodemon": "^1.8.1",
+    "phantomjs": "^1.9.19",
+    "webpack-stream": "^3.1.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "express": "^4.13.3"
+  }
+}
