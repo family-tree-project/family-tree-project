@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var minifyCss = require('gulp-minify-css');
-var gulpWatch = require('gulp-watch');
+// var gulpWatch = require('gulp-watch');
 var sass = require('gulp-sass');
 var maps = require('gulp-sourcemaps');
 var testFiles = ['./test/**/*.js'];
@@ -31,9 +31,10 @@ gulp.task('styles:dev', function() {
   .pipe(gulp.dest('build/styles/'));
 });
 
-gulp.task('css:watch', function () {
-  gulp.watch('app/**/styles/*.css', ['styles:dev']);
-});
+// task to watch for css changes
+// gulp.task('css:watch', function () {
+//   gulp.watch('app/**/styles/*.css', ['styles:dev']);
+// });
 
 gulp.task('scripts:dev', function() {
   return gulp.src('app/js/**/*.js')
