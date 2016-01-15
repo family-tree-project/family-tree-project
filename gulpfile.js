@@ -24,7 +24,6 @@ var testFiles = [__dirname + '/test/**/*.js',
 // Any files copied directly to build folder, including HTML & images.
 var staticFiles = ['app/**/*.html'];
 
-
 /* * * * * * * * * * * * * * * * * *
             BUILD TASKS
  * * * * * * * * * * * * * * * * * */
@@ -55,6 +54,16 @@ gulp.task('styles:dev', function() {
     .pipe(gulp.dest('build/styles/'));
 });
 
+// task to watch for css changes
+// gulp.task('css:watch', function () {
+//   gulp.watch('app/**/styles/*.css', ['styles:dev']);
+// });
+
+gulp.task('images:dev', function() {
+  gulp.src('app/images/leaflet/*.png')
+  .pipe(gulp.dest('build/images/leaflet/'));
+});
+
 // For client-side tests.
 gulp.task('webpack:test', function() {
   return gulp.src('test/client/test_entry.js')
@@ -78,7 +87,7 @@ gulp.task('jshint:backendFiles', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('jshint:testfiles', function() {
+gulp.task('jshint:testFiles', function() {
   return gulp.src(testFiles)
     .pipe(jshint({
       node: true,
@@ -93,7 +102,7 @@ gulp.task('jshint:testfiles', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('jshint:appfiles', function() {
+gulp.task('jshint:appFiles', function() {
   return gulp.src(appfiles)
     .pipe(jshint({
       node: true,
@@ -104,11 +113,9 @@ gulp.task('jshint:appfiles', function() {
     .pipe(jshint.reporter('default'));
 });
 
-
 /* * * * * * * * * * * * * * * * * *
             TEST TASKS
  * * * * * * * * * * * * * * * * * */
-
 
 gulp.task('mocha', function() {
   return gulp.src(backendFiles)
