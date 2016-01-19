@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ng-app="FamilyTreeApp">
 <head>
   <meta charset="UTF-8">
   <title>AWESOME FAMILY TREE VISUALIZER</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+  <div data-ng-controller="FamilyTreeController">
+    <div>
+      <h1>FamilyTree Story Mapper</h1>
+    </div>
 
+    <div>
+      <leaflet defaults="defaults" height="480px" width="640px"></leaflet>
+    </div>
+  </div>
+  <script type="text/javascript" src="bundle.js"></script>
 </body>
 </html>

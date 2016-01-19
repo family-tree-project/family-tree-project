@@ -1,5 +1,9 @@
-require('./leaflet');
 require('angular/angular');
-// require('angular-route');
+require('leaflet');
+require('angular-simple-logger');
+require('ui-leaflet');
 var angular = window.angular;
-require('./directives/angular-leaflet-directive');
+
+
+var familyTreeApp = angular.module('FamilyTreeApp', ['nemLogging', 'ui-leaflet']);
+require('./familytree/familytree')(familyTreeApp);
