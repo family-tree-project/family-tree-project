@@ -27,6 +27,7 @@
   "devDependencies": {
     "angular": "^1.4.8",
     "angular-mocks": "^1.4.8",
+    "angular-simple-logger": "^0.1.5",
     "chai": "^3.4.1",
     "chai-http": "^1.0.0",
     "gulp": "^3.9.0",
@@ -41,8 +42,10 @@
     "karma": "^0.13.19",
     "karma-jasmine": "^0.3.6",
     "karma-phantomjs-launcher": "^0.2.3",
+    "leaflet": "^0.7.7",
     "mocha": "^2.3.4",
     "phantomjs": "^1.9.19",
+    "ui-leaflet": "^1.0.0",
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
