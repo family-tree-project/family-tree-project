@@ -23,9 +23,6 @@ DELETE  - remove nodes from user input
 DELETE  - remove all nodes related to user if account is deleted
 */
 
-familyTreeRouter.get('/familyTrees', function(req, res) {
-  res.send(data);
-});
 //default
 familyTreeRouter.get('/', function(req, res) {
   db.cypherQuery("MATCH path=()-[d*]->(n:testUser)-[a*]->() RETURN relationships(path)", function(err, results) {
