@@ -1,0 +1,4 @@
+CREATE (f:testPerson {name: 'father'})-[:PARENTED]->(testParents:testOffspring)<-[:PARENTED]-(m:testPerson {name: 'mother'})
+CREATE (testParents)-[:CHILD]->(u:testUser:testPerson {name: 'tester'})-[:PARENTED]->(testCouple:testOffspring)<-[:PARENTED]-(s:testPerson {name: 'spouse'})
+CREATE (ch:testPerson {name: 'child'})<-[:CHILD]-(testCouple)
+RETURN u,ch,s,f,m,testCouple,testParents
