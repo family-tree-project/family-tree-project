@@ -65,15 +65,15 @@ gulp.task('images:dev', function() {
 });
 
 // For client-side tests.
-gulp.task('webpack:test', function() {
-  return gulp.src('test/client/test_entry.js')
-  .pipe(webpack ({
-    output: {
-      filename: 'test_bundle.js'
-    }
-  }))
-  .pipe(gulp.dest('test/client/'));
-});
+// gulp.task('webpack:test', function() {
+//   return gulp.src('test/client/test_entry.js')
+//   .pipe(webpack ({
+//     output: {
+//       filename: 'test_bundle.js'
+//     }
+//   }))
+//   .pipe(gulp.dest('test/client/'));
+// });
 
 /* * * * * * * * * * * * * * * * * *
             LINT TASKS
@@ -148,7 +148,7 @@ gulp.task('app:watch', function() {
         QUICK TASKS & DEFAULT
  * * * * * * * * * * * * * * * * * */
 
-gulp.task('build', ['static:dev', 'webpack:dev', 'styles:dev', 'webpack:test']);
+gulp.task('build', ['static:dev', 'webpack:dev', 'styles:dev']);
 gulp.task('lint', ['jshint:backendFiles', 'jshint:testfiles', 'jshint:devfiles']);
 gulp.task('test', ['mocha', 'karma']);
 gulp.task('watch', ['build:watch', 'app:watch']);

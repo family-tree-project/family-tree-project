@@ -52,7 +52,7 @@ var queries = {
       +   "deathDate: {deathDate},"
       +   "deathLoc: {deathLoc}"
       + "})<-[:CHILD]-(onode)"
-  
+
 }
 
 familyTreeRouter.post('/tree', jsonParser, function(req, res) {
@@ -68,7 +68,7 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
       },
       function(err, result) {
         if(err) throw err;
-        
+
         console.log("offspring node: ", result.data[0]._id);
 
         db.cypherQuery(queries.createNodeWithParents,
@@ -90,5 +90,5 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
   }
 
   //When specifying child(ren), a dummy node will be created (called "unspecified") if there isn't another parent to connect with offspring node
-  
+
 });
