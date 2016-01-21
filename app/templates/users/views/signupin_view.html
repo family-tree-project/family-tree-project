@@ -1,0 +1,19 @@
+<section>
+  <h1>{{h1Text}}</h1>
+  <form name="userForm" data-ng-submit="sendToServer(user)">
+    <p class="warning" data-ng-if="nameTaken"> Username has been taken. Try another one!</p>
+    <p class="warning" data-ng-if="wrongPassword"> That was not the correct password.</p>
+    <label for="signupName">User Name:</label>
+    <input required="required" type="text" id="signupName" data-ng-model="user.username">
+    <label for="signupPassword">Password:</label>
+    <input required="required"  type="password" id="signupPassword" data-ng-model="user.password">
+
+    <label data-ng-if="confirmPassword" for="passwordConfirm">Re-type Password:</label>
+
+    <input data-ng-if="confirmPassword" required="required"  data-ng-if="confirmPassword" type="password" id="passwordConfirm" data-ng-model="user.confirmation">
+    <p class="warning" data-ng-if="confirmPassword && !passwordMatch(user)"> Passwords do not match!</p>
+    <button type="submit" data-ng-disabled="userForm.$invalid || (confirmPassword &&!passwordMatch(user))">{{buttonText}}</button>
+  </form>
+
+  <button data-ng-click="changePlaces()">{{changePlacesText}}</button>
+</section>

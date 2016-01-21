@@ -26,11 +26,15 @@
   "homepage": "https://github.com/family-tree-project/family-tree-project#readme",
   "devDependencies": {
     "angular": "^1.4.8",
+    "angular-base64": "^2.0.5",
+    "angular-cookies": "^1.4.8",
     "angular-mocks": "^1.4.8",
-    "angular-simple-logger": "^0.1.5",
     "angular-route": "^1.4.8",
+    "angular-simple-logger": "^0.1.5",
+    "bcrypt": "^0.8.5",
     "chai": "^3.4.1",
     "chai-http": "^1.0.0",
+    "eat": "^0.1.1",
     "gulp": "^3.9.0",
     "gulp-concat-css": "^2.2.0",
     "gulp-jshint": "^2.0.0",
@@ -50,8 +54,10 @@
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
+    "angular": "^1.4.8",
     "body-parser": "^1.14.2",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "mongoose": "^4.3.6"
   },
   "engines": {
     "node": "0.12.7"
