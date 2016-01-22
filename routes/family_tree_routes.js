@@ -38,21 +38,26 @@ familyTreeRouter.get('/', function(req, res) {
   });
 });
 
+var node_params = "name: {name},"
+  + "birthDate: {birthDate},"
+  + "birthLoc: {birthLoc},"
+  + "deathDate: {deathDate},"
+  + "deathLoc: {deathLoc}";
 var queries = {
   findParents:
     "MATCH (p1)-[]->(onode)<-[]-(p2) "
     + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
     + "RETURN onode",
   createNodeWithParents:
-    "MATCH (onode) WHERE id(onode)={node} "
-      + "CREATE (n:Person {"
-      +   "name: {name},"
-      +   "birthDate: {birthDate},"
-      +   "birthLoc: {birthLoc},"
-      +   "deathDate: {deathDate},"
-      +   "deathLoc: {deathLoc}"
-      + "})<-[:CHILD]-(onode)"
-  
+    "MATCH (onode) WHERE id(onode)={offspringNodeID} "
+      + "CREATE (:Person {" + node_params
+      + "})<-[:CHILD]-(onode)",
+  createNodeWithChild:
+    "MATCH (child) WHERE id(child)={childNodeID} "
+      + "CREATE (:Person {" + node_params
+      + "})-[:PARENTED]->(offspringNode:Offspring)-[:CHILD]->(child) "
+      + "CREATE (:Person {name: 'Not Specified'})-[:PARENTED]->(offspringNode) "
+      + "RETURN offspringNode"
 }
 
 familyTreeRouter.post('/tree', jsonParser, function(req, res) {
@@ -68,8 +73,6 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
       },
       function(err, result) {
         if(err) throw err;
-        
-        console.log("offspring node: ", result.data[0]._id);
 
         db.cypherQuery(queries.createNodeWithParents,
         {
@@ -78,7 +81,7 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
           birthLoc: req.body.birthLoc,
           deathDate: req.body.deathDate,
           deathLoc: req.body.deathLoc,
-          node: result.data[0]._id
+          offspringNodeID: result.data[0]._id
         },
         function(err, result) {
           if(err) throw err;
@@ -89,6 +92,25 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
     );
   }
 
-  //When specifying child(ren), a dummy node will be created (called "unspecified") if there isn't another parent to connect with offspring node
+  //When specifying child(ren) and no parents exist, a new offspring node and unspecified parent need to be created.
+  else if(req.body.children.length) {
+    db.cypherQuery(queries.createNodeWithChild,
+    {
+      name: req.body.name,
+      birthDate: req.body.birthDate,
+      birthLoc: req.body.birthLoc,
+      deathDate: req.body.deathDate,
+      deathLoc: req.body.deathLoc,
+      childNodeID: req.body.children[0]
+    },
+    function(err, result) {
+      if(err) throw err;
+
+      res.json({msg: 'Member added'});
+    });
+  }
+});
+
+familyTreeRouter.put('/tree', jsonParser, function(req, res) {
   
 });
