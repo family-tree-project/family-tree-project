@@ -1,16 +1,17 @@
 var express = require('express');
 var jsonParser = require('body-parser').json();
 
+var Authenticat = require('authenticat');
+var mongoose = require('mongoose');
+var connection = mongoose.createConnection(process.env.MONGOLAB_URI);
+var authenticat = new Authenticat(connection);
+
 var node_neo4j = require('node-neo4j');
 var dbAddress = 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
-var GRAPHENEDB_URL = GRAPHENEDB_URL || dbAddress
-var db = new node_neo4j(GRAPHENEDB_URL);
+process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL || dbAddress
+var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 
 var familyTreeRouter = module.exports = exports = express.Router();
-
-// NODE           (identifier:Schema {prop: value})
-// RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
-// ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
 
 /*
 Routes needed:
@@ -43,6 +44,9 @@ var node_params = "name: {name},"
   + "birthLoc: {birthLoc},"
   + "deathDate: {deathDate},"
   + "deathLoc: {deathLoc}";
+// NODE           (identifier:Schema {prop: value})
+// RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
+// ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
 var queries = {
   findParents:
     "MATCH (p1)-[]->(onode)<-[]-(p2) "
@@ -60,11 +64,9 @@ var queries = {
       + "RETURN offspringNode"
 }
 
-familyTreeRouter.post('/tree', jsonParser, function(req, res) {
+familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
   //User will give name, birthDate, birthLoc, deathDate, deathLoc, parents and/or children (by id)
   //When specifying parents, both must exist (for now) to find their offspring node
-  console.log("req data: ", req.body.parents);
-
   if(req.body.parents.length === 2) {
     db.cypherQuery(queries.findParents,
       {
@@ -112,5 +114,5 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
 });
 
 familyTreeRouter.put('/tree', jsonParser, function(req, res) {
-
+  res.json({msg: "Member updated"})
 });
