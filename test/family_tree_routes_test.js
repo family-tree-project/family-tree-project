@@ -39,9 +39,7 @@ describe("The database", function() {
         token = res.body.token;
 
         db.cypherQuery(test_tree, function(err, results) {
-          if(err) {
-            throw err;
-          }
+          if(err) throw err;
 
           nodes_array = results.data[0];
 
