@@ -131,6 +131,7 @@ describe("The database", function() {
       .send({
         token: token,
         id: father_node._id,
+        name: 'dad',
         birthDate: new Date(1922, 5, 30),
         deathDate: new Date(2005, 10, 4),
         birthLoc: [52.302, 13.2356],

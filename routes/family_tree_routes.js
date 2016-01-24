@@ -39,30 +39,34 @@ familyTreeRouter.get('/', function(req, res) {
   });
 });
 
-var node_params = "name: {name},"
-  + "birthDate: {birthDate},"
-  + "birthLoc: {birthLoc},"
-  + "deathDate: {deathDate},"
-  + "deathLoc: {deathLoc}";
 // NODE           (identifier:Schema {prop: value})
 // RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
 // ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
-var queries = {
-  findParents:
-    "MATCH (p1)-[]->(onode)<-[]-(p2) "
-    + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
-    + "RETURN onode",
-  createNodeWithParents:
-    "MATCH (onode) WHERE id(onode)={offspringNodeID} "
-      + "CREATE (:Person {" + node_params
-      + "})<-[:CHILD]-(onode)",
-  createNodeWithChild:
-    "MATCH (child) WHERE id(child)={childNodeID} "
-      + "CREATE (:Person {" + node_params
-      + "})-[:PARENTED]->(offspringNode:Offspring)-[:CHILD]->(child) "
-      + "CREATE (:Person {name: 'Not Specified'})-[:PARENTED]->(offspringNode) "
-      + "RETURN offspringNode"
-}
+var queries = function() {
+  var node_params = "name: {name},"
+    + "birthDate: {birthDate},"
+    + "birthLoc: {birthLoc},"
+    + "deathDate: {deathDate},"
+    + "deathLoc: {deathLoc},"
+    + "nodeSize: 5";  //arbitrary field that the rendering engine needs
+
+  return {
+    findParents:
+      "MATCH (p1)-[]->(onode)<-[]-(p2) "
+      + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
+      + "RETURN onode",
+    createNodeWithParents:
+      "MATCH (onode) WHERE id(onode)={offspringNodeID} "
+        + "CREATE (:Person {" + node_params
+        + "})<-[:CHILD]-(onode)",
+    createNodeWithChild:
+      "MATCH (child) WHERE id(child)={childNodeID} "
+        + "CREATE (:Person {" + node_params
+        + "})-[:PARENTED]->(offspringNode:Offspring {nodeSize: 1})-[:CHILD]->(child) "
+        + "CREATE (:Person {name: 'Not Specified', nodeSize: 3})-[:PARENTED]->(offspringNode) "
+        + "RETURN offspringNode"
+  }
+}();
 
 familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
   //User will give name, birthDate, birthLoc, deathDate, deathLoc, parents and/or children (by id)
@@ -113,6 +117,24 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
   }
 });
 
-familyTreeRouter.put('/tree', jsonParser, function(req, res) {
-  res.json({msg: "Member updated"})
+//Update a family member's data
+familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
+  db.readNode(req.body.id, function(err, node) {
+    db.updateNode(req.body.id,
+      {
+        //db.updateNode replaces all node properties, so all fields need to be assigned to avoid losing any
+        name: req.body.name || node.name,
+        birthDate: req.body.birthDate || node.birthDate,
+        birthLoc: req.body.birthLoc || node.birthLoc,
+        deathDate: req.body.deathDate || node.deathDate,
+        deathLoc: req.body.deathLoc || node.deathLoc,
+        nodeSize: 5 //if this was previously a 'Not Specified' person, make its new size equal to a real person
+      },
+      function(err, result) {
+        if(err) throw err;
+
+        res.json({msg: "Member updated"});
+      }
+    );
+  });
 });
