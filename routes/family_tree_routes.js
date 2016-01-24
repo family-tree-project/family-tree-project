@@ -1,16 +1,17 @@
 var express = require('express');
 var jsonParser = require('body-parser').json();
 
+var Authenticat = require('authenticat');
+var mongoose = require('mongoose');
+var connection = mongoose.createConnection(process.env.MONGOLAB_URI);
+var authenticat = new Authenticat(connection);
+
 var node_neo4j = require('node-neo4j');
 var dbAddress = 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
-var GRAPHENEDB_URL = GRAPHENEDB_URL || dbAddress
-var db = new node_neo4j(GRAPHENEDB_URL);
+process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL || dbAddress
+var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 
 var familyTreeRouter = module.exports = exports = express.Router();
-
-// NODE           (identifier:Schema {prop: value})
-// RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
-// ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
 
 /*
 Routes needed:
@@ -38,28 +39,34 @@ familyTreeRouter.get('/', function(req, res) {
   });
 });
 
+var node_params = "name: {name},"
+  + "birthDate: {birthDate},"
+  + "birthLoc: {birthLoc},"
+  + "deathDate: {deathDate},"
+  + "deathLoc: {deathLoc}";
+// NODE           (identifier:Schema {prop: value})
+// RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
+// ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
 var queries = {
   findParents:
     "MATCH (p1)-[]->(onode)<-[]-(p2) "
     + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
     + "RETURN onode",
   createNodeWithParents:
-    "MATCH (onode) WHERE id(onode)={node} "
-      + "CREATE (n:Person {"
-      +   "name: {name},"
-      +   "birthDate: {birthDate},"
-      +   "birthLoc: {birthLoc},"
-      +   "deathDate: {deathDate},"
-      +   "deathLoc: {deathLoc}"
-      + "})<-[:CHILD]-(onode)"
-
+    "MATCH (onode) WHERE id(onode)={offspringNodeID} "
+      + "CREATE (:Person {" + node_params
+      + "})<-[:CHILD]-(onode)",
+  createNodeWithChild:
+    "MATCH (child) WHERE id(child)={childNodeID} "
+      + "CREATE (:Person {" + node_params
+      + "})-[:PARENTED]->(offspringNode:Offspring)-[:CHILD]->(child) "
+      + "CREATE (:Person {name: 'Not Specified'})-[:PARENTED]->(offspringNode) "
+      + "RETURN offspringNode"
 }
 
-familyTreeRouter.post('/tree', jsonParser, function(req, res) {
+familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
   //User will give name, birthDate, birthLoc, deathDate, deathLoc, parents and/or children (by id)
   //When specifying parents, both must exist (for now) to find their offspring node
-  console.log("req data: ", req.body.parents);
-
   if(req.body.parents.length === 2) {
     db.cypherQuery(queries.findParents,
       {
@@ -69,8 +76,6 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
       function(err, result) {
         if(err) throw err;
 
-        console.log("offspring node: ", result.data[0]._id);
-
         db.cypherQuery(queries.createNodeWithParents,
         {
           name: req.body.name,
@@ -78,7 +83,7 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
           birthLoc: req.body.birthLoc,
           deathDate: req.body.deathDate,
           deathLoc: req.body.deathLoc,
-          node: result.data[0]._id
+          offspringNodeID: result.data[0]._id
         },
         function(err, result) {
           if(err) throw err;
@@ -89,6 +94,25 @@ familyTreeRouter.post('/tree', jsonParser, function(req, res) {
     );
   }
 
-  //When specifying child(ren), a dummy node will be created (called "unspecified") if there isn't another parent to connect with offspring node
+  //When specifying child(ren) and no parents exist, a new offspring node and unspecified parent need to be created.
+  else if(req.body.children.length) {
+    db.cypherQuery(queries.createNodeWithChild,
+    {
+      name: req.body.name,
+      birthDate: req.body.birthDate,
+      birthLoc: req.body.birthLoc,
+      deathDate: req.body.deathDate,
+      deathLoc: req.body.deathLoc,
+      childNodeID: req.body.children[0]
+    },
+    function(err, result) {
+      if(err) throw err;
 
+      res.json({msg: 'Member added'});
+    });
+  }
+});
+
+familyTreeRouter.put('/tree', jsonParser, function(req, res) {
+  res.json({msg: "Member updated"})
 });
