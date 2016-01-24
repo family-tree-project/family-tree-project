@@ -1,15 +1,17 @@
 var express = require('express');
 var jsonParser = require('body-parser').json();
 
-var Authenticat = require('authenticat');
 var mongoose = require('mongoose');
 var connection = mongoose.createConnection(process.env.MONGOLAB_URI);
+var Authenticat = require('authenticat');
 var authenticat = new Authenticat(connection);
 
 var node_neo4j = require('node-neo4j');
 var dbAddress = 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
 process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL || dbAddress
 var db = new node_neo4j(process.env.GRAPHENEDB_URL);
+
+var handleError = require(__dirname + '/../lib/error_handler');
 
 var familyTreeRouter = module.exports = exports = express.Router();
 
@@ -28,7 +30,7 @@ DELETE  - remove all nodes related to user if account is deleted
 familyTreeRouter.get('/', function(req, res) {
   db.cypherQuery("MATCH path=()-[d*]->(n:testUser)-[a*]->() RETURN relationships(path)", function(err, results) {
       if(err) {
-        throw err;
+        handleError(err, res, 500);
       }
 
       // console.log(results);
@@ -78,7 +80,9 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
         parent2: req.body.parents[1]
       },
       function(err, result) {
-        if(err) throw err;
+        if(err) {
+          handleError(err, res, 500);
+        }
 
         db.cypherQuery(queries.createNodeWithParents,
         {
@@ -90,7 +94,9 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
           offspringNodeID: result.data[0]._id
         },
         function(err, result) {
-          if(err) throw err;
+          if(err) {
+            handleError(err, res, 500);
+          }
 
           res.json({msg: 'Member added'});
         });
@@ -110,7 +116,9 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       childNodeID: req.body.children[0]
     },
     function(err, result) {
-      if(err) throw err;
+      if(err) {
+        handleError(err, res, 500);
+      }
 
       res.json({msg: 'Member added'});
     });
@@ -131,7 +139,9 @@ familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, r
         nodeSize: 5 //if this was previously a 'Not Specified' person, make its new size equal to a real person
       },
       function(err, result) {
-        if(err) throw err;
+        if(err) {
+          handleError(err, res, 500);
+        }
 
         res.json({msg: "Member updated"});
       }
