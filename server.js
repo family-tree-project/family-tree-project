@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var Authenticat = require('authenticat');
 var mongoose = require('mongoose');
-var connection = mongoose.createConnection('mongodb://localhost/users');
+var connection = mongoose.createConnection(process.env.MONGOLAB_URI);
 var authenticat = new Authenticat(connection);
 
 var familyTreeRouter = require(__dirname + '/routes/family_tree_routes.js');
@@ -20,6 +20,7 @@ connection.on( 'connected', function() {
 });
 
 app.use('/api', authenticat.router);
+app.use('/api', familyTreeRouter);
 
 app.get('/userdetails', authenticat.tokenAuth, function(req, res) {
   res.json({username:req.user.username});
