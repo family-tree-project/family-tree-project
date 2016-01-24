@@ -13,8 +13,8 @@ require(__dirname + '/../server.js');
 var familyTreeRouter = require(__dirname + '/../routes/family_tree_routes');
 
 var node_neo4j = require('node-neo4j');
-var dbAddress = 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
-process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL || dbAddress
+process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL
+  || 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
 var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 
 var url = "localhost:3000";
