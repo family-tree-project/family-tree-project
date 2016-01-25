@@ -9,7 +9,8 @@ var authenticat = new Authenticat(connection);
 
 var familyTreeRouter = require(__dirname + '/routes/family_tree_routes.js');
 
-app.use(express.static(__dirname + '/build'));
+var static_folder = process.env.NODE_ENV === 'production' ? '/public' : '/build';
+app.use(express.static(__dirname + static_folder));
 
 mongoose.connection.on( 'error', function(err) {
   console.log( 'connection failed: ' + err);
