@@ -30,7 +30,7 @@ module.exports = function(app) {
       $scope.addRelative = function(relative) {
         $http.post('/', relative)                  // ROUTE?
         .then(function(res) {
-          $scope.family.push(res.data);
+          $scope.makeTree();                      // Function name/params?
           $scope.newRelative = {};
         }, function(err) {
           console.log(err.data);

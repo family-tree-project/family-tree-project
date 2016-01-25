@@ -19,6 +19,7 @@ module.exports = function(app) {
       $http.post('/api/signup', user)
       .then(function(res) {
         $cookies.put('token', res.data.token);
+        $scope.getUser();   // from auth controller;
         $location.path('/familyTrees');
 
       }, function(err) {
