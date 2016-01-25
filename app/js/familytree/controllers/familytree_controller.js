@@ -13,5 +13,34 @@ module.exports = function(app) {
         }
       });
 
+      $scope.family = ['No family members to display!'];
+      $scope.newRelative = {};
+
+      //gets the current user's family tree.
+      $scope.getTree = function() {
+        $http.get('/' + $scope.currentUser.id)    // ROUTE?
+        .then(function(res) {
+          $scope.family = res.data;
+      }, function(err) {
+          console.log(err.data);
+      });
+      }
+
+      //pulls info from FORM and sends post request
+      $scope.addRelative = function(relative) {
+        $http.post('/', relative)                  // ROUTE?
+        .then(function(res) {
+          $scope.family.push(res.data);
+          $scope.newRelative = {};
+        }, function(err) {
+          console.log(err.data);
+        });
+      }
+
+      //checks appropriate geocoding
+      $scope.checkGeocode = function(location) {
+
+      }
+
     }]);
 };
