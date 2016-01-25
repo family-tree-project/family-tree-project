@@ -1,0 +1,32 @@
+<form data-ng-controller="FamilyTreeController" data-ng-submit="addRelative()">
+  <label for="newRelativeName">Name:</label>
+  <input type="text" id="newRelativeName" data-ng-model="newRelative.name"></input>
+
+  <label for="newRelativeBirth">Date of Birth:</label>
+  <input type="text" id="newRelativeBirth" data-ng-model="newRelative.birthDate"></input>
+
+  <label for="newRelativeDeath">Date of Death:</label>
+  <input type="text" id="newRelativeDeath" data-ng-model="newRelative.deathDate"></input>
+
+  <label for="newRelativeBirthLoc">Location of Birth:</label>
+  <input type="text" id="newRelativeBirthLoc" data-ng-model="newRelative.birthLoc"></input>
+  <button data-ng-click="checkGeocode(newRelative.birthLoc)">Find this location!</button>
+
+  <label for="newRelativeDeathLoc">Location of Death:</label>
+  <input type="text" id="newRelativeDeathLoc" data-ng-model="newRelative.deathLoc"></input>
+  <button data-ng-click="checkGeocode(newRelative.deathLoc)">Find this location!</button>
+
+  <button type="submit">Add Relative!</button>
+</form>
+
+
+name
+
+birthDate: Date
+deathDate: Date
+
+birthLoc: {placeName: String, location: [lat,long]}
+deathLoc: {placeName: String, location: [lat,long]}
+
+children: []
+parents: []
