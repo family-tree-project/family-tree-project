@@ -12,8 +12,8 @@ require('./users/users.js')(familyTreeApp);
 
 familyTreeApp.config(['$routeProvider', function($route) {
   $route
-  .when('/familyTrees', {
-    templateUrl: '/templates/familyTree_view.html',
+  .when('/tree', {
+    templateUrl: '/templates/family_tree_view.html',
     controller: 'FamilyTreeController'
   })
   .when('/signup', {
