@@ -6,7 +6,9 @@
   <link rel="stylesheet" href="styles/styles.min.css">
 </head>
 <body>
-  <main data-ng-view></main>
+  <div data-ng-controller="AuthController" data-ng-init="getUser()">
+    <main data-ng-view></main>
+  </div>
 
   <script type="text/javascript" src="bundle.js"></script>
 </body>

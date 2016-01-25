@@ -24,7 +24,5 @@ familyTreeApp.config(['$routeProvider', function($route) {
     templateUrl: '/templates/users/views/signupin_view.html',
     controller: 'SigninController'
   })
-  .otherwise({
-    redirectTo: '/signup'
-  });
+  .otherwise({redirectTo: '/signup'});
 }]);

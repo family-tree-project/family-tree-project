@@ -21,6 +21,10 @@ connection.on( 'connected', function() {
 });
 
 app.use('/api', authenticat.router);
+app.get('/user', authenticat.tokenAuth, function(req, res) {
+  res.json({username: req.user.username});
+});
+
 app.use('/api', familyTreeRouter);
 
 var port = process.env.PORT || 3000;

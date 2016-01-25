@@ -19,8 +19,8 @@ module.exports = function(app) {
       $http.post('/api/signup', user)
       .then(function(res) {
         $cookies.put('token', res.data.token);
+        $scope.getUser();   // from auth controller;
         $location.path('/tree');
-
       }, function(err) {
         $scope.nameTaken = err.data.nameTaken;
         console.log(err);
