@@ -7,8 +7,8 @@ var Authenticat = require('authenticat');
 var authenticat = new Authenticat(connection);
 
 var node_neo4j = require('node-neo4j');
-var dbAddress = 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
-process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL || dbAddress
+process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL
+  || 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
 var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 
 var handleError = require(__dirname + '/../lib/error_handler');
@@ -30,14 +30,10 @@ DELETE  - remove all nodes related to user if account is deleted
 familyTreeRouter.get('/', function(req, res) {
   db.cypherQuery("MATCH path=()-[d*]->(n:testUser)-[a*]->() RETURN relationships(path)", function(err, results) {
       if(err) {
-        handleError(err, res, 500);
+        return handleError(err, res, 500);
       }
 
-      // console.log(results);
-      // for(var i = 0; i < results.data.length; i++) {
-      //   console.log("row " + i + ":\n", results.data[i]);
-      // }
-      res.json(results.data);
+      return res.json(results.data);
   });
 });
 
@@ -57,6 +53,8 @@ var queries = function() {
       "MATCH (p1)-[]->(onode)<-[]-(p2) "
       + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
       + "RETURN onode",
+    findFamily:
+      "MATCH (p:Person)-[*0..]-(:User {username: {username}}) RETURN p",
     createNodeWithParents:
       "MATCH (onode) WHERE id(onode)={offspringNodeID} "
         + "CREATE (:Person {" + node_params
@@ -81,7 +79,7 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       },
       function(err, result) {
         if(err) {
-          handleError(err, res, 500);
+          return handleError(err, res, 500);
         }
 
         db.cypherQuery(queries.createNodeWithParents,
@@ -95,10 +93,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
         },
         function(err, result) {
           if(err) {
-            handleError(err, res, 500);
+            return handleError(err, res, 500);
           }
 
-          res.json({msg: 'Member added'});
+          return res.json({msg: 'Member added'});
         });
       }
     );
@@ -117,10 +115,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
     },
     function(err, result) {
       if(err) {
-        handleError(err, res, 500);
+        return handleError(err, res, 500);
       }
 
-      res.json({msg: 'Member added'});
+      return res.json({msg: 'Member added'});
     });
   }
 });
@@ -140,11 +138,45 @@ familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, r
       },
       function(err, result) {
         if(err) {
-          handleError(err, res, 500);
+          return handleError(err, res, 500);
         }
 
-        res.json({msg: "Member updated"});
+        return res.json({msg: "Member updated"});
       }
     );
+  });
+});
+
+//Route that returns the user's tree (creating a new one for new users) on sign in/up.
+familyTreeRouter.post('/user-tree', jsonParser, authenticat.tokenAuth, function(req, res) {
+  db.readNodesWithLabelsAndProperties('User', {username: req.body.username}, function(err, userNodeArray) {
+    if(err) {
+      return handleError(err, res, 500);
+    }
+
+    if(!userNodeArray.length) { //no node found; create new one, and return it as an array of objects
+      db.insertNode({ //properties
+          username: req.body.username,
+          name: req.body.username
+        }, ['User', 'Person'], //labels
+        function(err, result) {
+          //result is a JSON for the node
+          if(err) {
+            return handleError(err, res, 500);
+          }
+
+          return res.json({data: [result]});
+        }
+      );
+    }
+    else { //found a node; return its family as an array of objects
+      db.cypherQuery(queries.findFamily, {username: req.body.username}, function(err, result) {
+        if(err) {
+          return handleError(err, res, 500);
+        }
+
+        return res.json({data: result.data});
+      });
+    }
   });
 });

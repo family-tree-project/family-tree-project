@@ -54,6 +54,32 @@ gulp.task('styles:dev', function() {
     .pipe(gulp.dest('build/styles/'));
 });
 
+// Production builds
+gulp.task('static:prod', function() {
+  gulp.src(staticFiles)
+  .pipe(gulp.dest('public/'));
+});
+
+gulp.task('webpack:prod', function() {
+  return gulp.src('app/js/entry.js')
+  .pipe(webpack({
+    output: {
+      filename: 'bundle.js'
+    }
+  }))
+  .pipe(gulp.dest('public/'));
+});
+
+gulp.task('styles:prod', function() {
+  return gulp.src(['app/styles/**/*.scss'])
+    .pipe(maps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(concatCss('styles.min.css'))
+    .pipe(minifyCss())
+    .pipe(maps.write('./'))
+    .pipe(gulp.dest('public/styles/'));
+});
+
 // task to watch for css changes
 // gulp.task('css:watch', function () {
 //   gulp.watch('app/**/styles/*.css', ['styles:dev']);
@@ -149,6 +175,7 @@ gulp.task('app:watch', function() {
  * * * * * * * * * * * * * * * * * */
 
 gulp.task('build', ['static:dev', 'webpack:dev', 'styles:dev']);
+gulp.task('build:prod', ['static:prod', 'webpack:prod', 'styles:prod']);
 gulp.task('lint', ['jshint:backendFiles', 'jshint:testfiles', 'jshint:devfiles']);
 gulp.task('test', ['mocha', 'karma']);
 gulp.task('watch', ['build:watch', 'app:watch']);

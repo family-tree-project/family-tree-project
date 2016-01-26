@@ -6,6 +6,13 @@ module.exports = function(app) {
       $http.get('/user')
       .then(function(res) {
         $scope.currentUser = res.data.username;
+        $http.post('/api/user-tree', res.data)
+        .then(function(res) {
+          $scope.familyMembers = res.data;
+          $location.path('/tree')
+        }, function(err) {
+          console.log(err);
+        });
       }, function(err) {
         console.log(err);
       });
