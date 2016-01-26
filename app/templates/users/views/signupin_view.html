@@ -1,8 +1,8 @@
 <section>
-  <h1>{{h1Text}}</h1>
-  <form name="userForm" data-ng-submit="sendToServer(user)">
-    <p class="warning" data-ng-if="nameTaken"> Username has been taken. Try another one!</p>
-    <p class="warning" data-ng-if="wrongPassword"> That was not the correct password.</p>
+  <h1 class="subheader">{{h1Text}}</h1>
+  <form class="align-center medium-4 grid-block" name="userForm" data-ng-submit="sendToServer(user)">
+    <p data-ng-if="nameTaken"> Username has been taken. Try another one!</p>
+    <p data-ng-if="wrongPassword"> That was not the correct password.</p>
     <label for="signupName">User Name:</label>
     <input required="required" type="text" id="signupName" data-ng-model="user.username">
     <label for="signupPassword">Password:</label>
@@ -11,9 +11,9 @@
     <label data-ng-if="confirmPassword" for="passwordConfirm">Re-type Password:</label>
 
     <input data-ng-if="confirmPassword" required="required"  data-ng-if="confirmPassword" type="password" id="passwordConfirm" data-ng-model="user.confirmation">
-    <p class="warning" data-ng-if="confirmPassword && !passwordMatch(user)"> Passwords do not match!</p>
-    <button type="submit" data-ng-disabled="userForm.$invalid || (confirmPassword &&!passwordMatch(user))">{{buttonText}}</button>
+    <p data-ng-if="confirmPassword && !passwordMatch(user)"> Passwords do not match!</p>
+    <button  class="info button" type="submit" data-ng-disabled="userForm.$invalid || (confirmPassword &&!passwordMatch(user))">{{buttonText}}</button>
   </form>
 
-  <button data-ng-click="changePlaces()">{{changePlacesText}}</button>
+  <button  class="info button" data-ng-click="changePlaces()">{{changePlacesText}}</button>
 </section>
