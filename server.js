@@ -21,11 +21,11 @@ connection.on( 'connected', function() {
 });
 
 app.use('/api', authenticat.router);
-app.get('/user', authenticat.tokenAuth, function(req, res) {
-  res.json({username: req.user.username});
-});
-
 app.use('/api', familyTreeRouter);
+
+app.get('/user', authenticat.tokenAuth, function(req, res) {
+  return res.json({username: req.user.username});
+});
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
