@@ -89,7 +89,6 @@ module.exports = function(app) {
         }
       });
 
-      $scope.family = ['No family members to display!'];
       $scope.newRelative = {};
 
       //gets the current user's family tree.
@@ -104,13 +103,17 @@ module.exports = function(app) {
 
       //pulls info from FORM and sends post request
       $scope.addRelative = function(relative) {
-        $http.post('/', relative)                  // ROUTE?
-        .then(function(res) {
-          $scope.drawTree();                      // Function name/params?
-          $scope.newRelative = {};
-        }, function(err) {
-          console.log(err.data);
-        });
+        if (parent1) relative.parent1 = relative.parent1._id;
+        if (parent2) relative.parent2 = relative.parent2._id;
+        if (child) relative.child = relative.child._id;
+        console.log('Added Relative!' + relative);
+        // $http.post('/tree', relative)
+        // .then(function(res) {
+        //   $scope.drawTree();
+        //   $scope.newRelative = {};
+        // }, function(err) {
+        //   console.log(err.data);
+        // });
       };
 
 
