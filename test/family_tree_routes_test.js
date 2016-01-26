@@ -20,7 +20,7 @@ var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 var url = "localhost:3000";
 var test_tree = fs.readFileSync(__dirname + '/test_tree.txt', {encoding: 'utf-8'});
 
-describe("The database", function() {
+describe("The tree routes", function() {
   var nodes_array;
   var father_node;
   var mother_node;
@@ -31,7 +31,7 @@ describe("The database", function() {
     chai.request(url)
       .post('/api/signup')
       .send({
-        username: 'dbtester2',
+        username: 'dbtester',
         password: '1234',
         confirmation: '1234'
       })
@@ -67,7 +67,20 @@ describe("The database", function() {
 
     db.cypherQuery("MATCH (n:testUser)-[*]-(m) DETACH DELETE n,m", function(err, data) {
       if(err) throw err;
-      done();
+
+      db.cypherQuery("MATCH (n:User {name: '!@#$%^&*()', username: '!@#$%^&*()'})-[*]-(m) DETACH DELETE n,m",
+        function(err, data) {
+          if(err) throw err;
+
+          db.cypherQuery("MATCH (n:User {name: ')(*&^%$#@!', username: ')(*&^%$#@!'}) DELETE n",
+            function(err, data) {
+            if(err) throw err;
+
+            done();
+            }
+          );
+        }
+      );
     });
   });
 
@@ -143,4 +156,45 @@ describe("The database", function() {
   });
 
   it("should DELETE a family member");
+
+  describe("that deal with user nodes and trees", function() {
+    before(function(done) {
+      db.cypherQuery("CREATE (:Person {name: 'father'})-[:PARENTED]->(o:Offspring)<-[:PARENTED]-(:Person {name: 'mother'}) CREATE (o)-[:CHILD]->(u:User:Person {name: '!@#$%^&*()', username: '!@#$%^&*()'})-[:PARENTED]->(:Offspring)<-[:PARENTED]-(:Person {name: 'spouse'}) RETURN u",
+        function(err, result) {
+          if(err) throw err;
+          done();
+        }
+      );
+    });
+
+    it("should create a new user node and return it", function(done) {
+      chai.request(url)
+        .post('/api/user-tree')
+        .send({
+          token: token,
+          username: ')(*&^%$#@!'
+        })
+        .end(function(err, res) {
+          expect(err).to.eql(null);
+          expect(res.body.data.length).to.eql(1);
+          expect(res.body.data[0].username).to.eql(')(*&^%$#@!');
+          done();
+        });
+    });
+
+    it("should return an existing user's family's nodes", function(done) {
+      chai.request(url)
+        .post('/api/user-tree')
+        .send({
+          token: token,
+          username: '!@#$%^&*()'
+        })
+        .end(function(err, res) {
+          expect(err).to.eql(null);
+          expect(res.body.data.length).to.eql(4);
+          expect(res.body.data[0].username).to.eql('!@#$%^&*()');
+          done();
+        });
+    });
+  });
 });

@@ -20,7 +20,6 @@ module.exports = function(app) {
       .then(function(res) {
         $cookies.put('token', res.data.token);
         $scope.getUser();   // from auth controller;
-        $location.path('/tree');
       }, function(err) {
         $scope.nameTaken = err.data.nameTaken;
         console.log(err);

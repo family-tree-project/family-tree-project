@@ -23,7 +23,6 @@ module.exports = function(app) {
         $scope.wrongPassword = res.data.wrongPassword;
         $cookies.put('token', res.data.token);
         $scope.getUser();   // from auth controller;
-        $location.path('/tree');
       }, function(err) {
         console.log(err);
         $scope.wrongPassword = err.data.wrongPassOrUser;
