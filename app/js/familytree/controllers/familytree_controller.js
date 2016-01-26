@@ -2,6 +2,8 @@ module.exports = function(app) {
   app.controller('FamilyTreeController', ['$scope', 'leafletData', '$http',
     function($scope,leafletData, $http) {
 
+      var mapQuestKey = 'qszwthBye44A571jhqvCn4AWhTsEILRT';
+
       // required for cypher parser
       require('../../plugins/sigma.parsers.json.js');
 
@@ -104,17 +106,51 @@ module.exports = function(app) {
       $scope.addRelative = function(relative) {
         $http.post('/', relative)                  // ROUTE?
         .then(function(res) {
-          $scope.makeTree();                      // Function name/params?
+          $scope.drawTree();                      // Function name/params?
           $scope.newRelative = {};
         }, function(err) {
           console.log(err.data);
         });
       };
 
-      //checks appropriate geocoding
-      $scope.checkGeocode = function(location) {
 
-      };
+      //checks appropriate geocoding
+      $scope.geoCodeResults = {};
+      $scope.checkBirthGeocode = function(location) {
+        var url = 'http://www.mapquestapi.com/geocoding/v1/address?key='
+          + mapQuestKey
+          + '&location=' + location
+          + '&callback=JSON_CALLBACK';
+        console.log('Calling geocoder API: ' + url);
+
+        $http.jsonp(url)
+          .success(function(data) {
+            $scope.geoCodeResults = data;
+            console.log($scope.geoCodeResults);
+            if (data.results[0].locations.length == 1) {
+              $scope.newRelative.birthCoords = data.results[0].locations[0].latLng;
+              console.log("coords saved: ");
+              console.log($scope.newRelative);
+            }
+          });
+      }; // End checkBirthGeocode
+
+      $scope.checkDeathGeocode = function(location) {
+        var url = 'http://www.mapquestapi.com/geocoding/v1/address?key='
+          + mapQuestKey
+          + '&location=' + location
+          + '&callback=JSON_CALLBACK';
+        console.log('Calling geocoder API: ' + url);
+
+        $http.jsonp(url)
+          .success(function(data) {
+            $scope.geoCodeResults = data;
+            console.log($scope.geoCodeResults);
+            if (data.results[0].locations.length == 1) {
+              $scope.newRelative.deathCoords = data.results[0].locations[0].latLng;
+            }
+          });
+      }; // End checkDeathGeocode
 
     }]);
 };
