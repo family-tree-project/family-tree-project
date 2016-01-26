@@ -23,14 +23,6 @@ connection.on( 'connected', function() {
 app.use('/api', authenticat.router);
 app.use('/api', familyTreeRouter);
 
-<<<<<<< HEAD
-app.get('/userdetails', authenticat.tokenAuth, function(req, res) {
-  res.json({username:req.user.username});
-});
-
-app.listen(3000, function() {
-  console.log('server up on port 3000');
-=======
 app.get('/user', authenticat.tokenAuth, function(req, res) {
   return res.json({username: req.user.username});
 });
@@ -38,5 +30,4 @@ app.get('/user', authenticat.tokenAuth, function(req, res) {
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
   console.log('server up on port', port);
->>>>>>> master
 });
