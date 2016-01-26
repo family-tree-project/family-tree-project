@@ -1,4 +1,4 @@
-<div data-ng-controller="FamilyTreeController">
+<div data-ng-controller="FamilyTreeController" data-ng-init="drawTree()">
   <div>
     <h1>FamilyTree Story Mapper</h1>
   </div>
@@ -6,4 +6,7 @@
   <div>
     <leaflet defaults="defaults" height="480px" width="640px"></leaflet>
   </div>
+
+  <div id="graph-container"></div>
+
 </div>
