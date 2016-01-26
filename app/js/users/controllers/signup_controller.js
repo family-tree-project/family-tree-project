@@ -19,11 +19,7 @@ module.exports = function(app) {
       $http.post('/api/signup', user)
       .then(function(res) {
         $cookies.put('token', res.data.token);
-<<<<<<< HEAD
-        $location.path('/familyTrees');
-=======
         $scope.getUser();   // from auth controller;
->>>>>>> master
       }, function(err) {
         $scope.nameTaken = err.data.nameTaken;
         console.log(err);
