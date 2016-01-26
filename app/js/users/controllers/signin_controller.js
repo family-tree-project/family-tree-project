@@ -21,7 +21,7 @@ module.exports = function(app) {
       .then(function(res) {
         console.log(res.data.token);
         $cookies.put('token', res.data.token);
-        $location.path('/familyTrees');
+        $scope.getUser();   // from auth controller;
       }, function(err) {
         console.log(err);
         $scope.wrongPassword = err.data.wrongPassOrUser;

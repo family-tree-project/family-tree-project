@@ -1,15 +1,17 @@
 var express = require('express');
 var jsonParser = require('body-parser').json();
 
-var Authenticat = require('authenticat');
 var mongoose = require('mongoose');
 var connection = mongoose.createConnection(process.env.MONGOLAB_URI);
+var Authenticat = require('authenticat');
 var authenticat = new Authenticat(connection);
 
 var node_neo4j = require('node-neo4j');
-var dbAddress = 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
-process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL || dbAddress
+process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL
+  || 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
 var db = new node_neo4j(process.env.GRAPHENEDB_URL);
+
+var handleError = require(__dirname + '/../lib/error_handler');
 
 var familyTreeRouter = module.exports = exports = express.Router();
 
@@ -28,41 +30,43 @@ DELETE  - remove all nodes related to user if account is deleted
 familyTreeRouter.get('/', function(req, res) {
   db.cypherQuery("MATCH path=()-[d*]->(n:testUser)-[a*]->() RETURN relationships(path)", function(err, results) {
       if(err) {
-        throw err;
+        return handleError(err, res, 500);
       }
 
-      // console.log(results);
-      // for(var i = 0; i < results.data.length; i++) {
-      //   console.log("row " + i + ":\n", results.data[i]);
-      // }
-      res.json(results.data);
+      return res.json(results.data);
   });
 });
 
-var node_params = "name: {name},"
-  + "birthDate: {birthDate},"
-  + "birthLoc: {birthLoc},"
-  + "deathDate: {deathDate},"
-  + "deathLoc: {deathLoc}";
 // NODE           (identifier:Schema {prop: value})
 // RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
 // ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
-var queries = {
-  findParents:
-    "MATCH (p1)-[]->(onode)<-[]-(p2) "
-    + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
-    + "RETURN onode",
-  createNodeWithParents:
-    "MATCH (onode) WHERE id(onode)={offspringNodeID} "
-      + "CREATE (:Person {" + node_params
-      + "})<-[:CHILD]-(onode)",
-  createNodeWithChild:
-    "MATCH (child) WHERE id(child)={childNodeID} "
-      + "CREATE (:Person {" + node_params
-      + "})-[:PARENTED]->(offspringNode:Offspring)-[:CHILD]->(child) "
-      + "CREATE (:Person {name: 'Not Specified'})-[:PARENTED]->(offspringNode) "
-      + "RETURN offspringNode"
-}
+var queries = function() {
+  var node_params = "name: {name},"
+    + "birthDate: {birthDate},"
+    + "birthLoc: {birthLoc},"
+    + "deathDate: {deathDate},"
+    + "deathLoc: {deathLoc},"
+    + "nodeSize: 5";  //arbitrary field that the rendering engine needs
+
+  return {
+    findParents:
+      "MATCH (p1)-[]->(onode)<-[]-(p2) "
+      + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
+      + "RETURN onode",
+    findFamily:
+      "MATCH (p:Person)-[*0..]-(:User {username: {username}}) RETURN p",
+    createNodeWithParents:
+      "MATCH (onode) WHERE id(onode)={offspringNodeID} "
+        + "CREATE (:Person {" + node_params
+        + "})<-[:CHILD]-(onode)",
+    createNodeWithChild:
+      "MATCH (child) WHERE id(child)={childNodeID} "
+        + "CREATE (:Person {" + node_params
+        + "})-[:PARENTED]->(offspringNode:Offspring {nodeSize: 1})-[:CHILD]->(child) "
+        + "CREATE (:Person {name: 'Not Specified', nodeSize: 3})-[:PARENTED]->(offspringNode) "
+        + "RETURN offspringNode"
+  }
+}();
 
 familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
   //User will give name, birthDate, birthLoc, deathDate, deathLoc, parents and/or children (by id)
@@ -74,7 +78,9 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
         parent2: req.body.parents[1]
       },
       function(err, result) {
-        if(err) throw err;
+        if(err) {
+          return handleError(err, res, 500);
+        }
 
         db.cypherQuery(queries.createNodeWithParents,
         {
@@ -86,9 +92,11 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
           offspringNodeID: result.data[0]._id
         },
         function(err, result) {
-          if(err) throw err;
+          if(err) {
+            return handleError(err, res, 500);
+          }
 
-          res.json({msg: 'Member added'});
+          return res.json({msg: 'Member added'});
         });
       }
     );
@@ -106,13 +114,69 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       childNodeID: req.body.children[0]
     },
     function(err, result) {
-      if(err) throw err;
+      if(err) {
+        return handleError(err, res, 500);
+      }
 
-      res.json({msg: 'Member added'});
+      return res.json({msg: 'Member added'});
     });
   }
 });
 
-familyTreeRouter.put('/tree', jsonParser, function(req, res) {
-  res.json({msg: "Member updated"})
+//Update a family member's data
+familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
+  db.readNode(req.body.id, function(err, node) {
+    db.updateNode(req.body.id,
+      {
+        //db.updateNode replaces all node properties, so all fields need to be assigned to avoid losing any
+        name: req.body.name || node.name,
+        birthDate: req.body.birthDate || node.birthDate,
+        birthLoc: req.body.birthLoc || node.birthLoc,
+        deathDate: req.body.deathDate || node.deathDate,
+        deathLoc: req.body.deathLoc || node.deathLoc,
+        nodeSize: 5 //if this was previously a 'Not Specified' person, make its new size equal to a real person
+      },
+      function(err, result) {
+        if(err) {
+          return handleError(err, res, 500);
+        }
+
+        return res.json({msg: "Member updated"});
+      }
+    );
+  });
+});
+
+//Route that returns the user's tree (creating a new one for new users) on sign in/up.
+familyTreeRouter.post('/user-tree', jsonParser, authenticat.tokenAuth, function(req, res) {
+  db.readNodesWithLabelsAndProperties('User', {username: req.body.username}, function(err, userNodeArray) {
+    if(err) {
+      return handleError(err, res, 500);
+    }
+
+    if(!userNodeArray.length) { //no node found; create new one, and return it as an array of objects
+      db.insertNode({ //properties
+          username: req.body.username,
+          name: req.body.username
+        }, ['User', 'Person'], //labels
+        function(err, result) {
+          //result is a JSON for the node
+          if(err) {
+            return handleError(err, res, 500);
+          }
+
+          return res.json({data: [result]});
+        }
+      );
+    }
+    else { //found a node; return its family as an array of objects
+      db.cypherQuery(queries.findFamily, {username: req.body.username}, function(err, result) {
+        if(err) {
+          return handleError(err, res, 500);
+        }
+
+        return res.json({data: result.data});
+      });
+    }
+  });
 });

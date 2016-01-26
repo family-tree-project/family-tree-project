@@ -9,7 +9,8 @@ var authenticat = new Authenticat(connection);
 
 var familyTreeRouter = require(__dirname + '/routes/family_tree_routes.js');
 
-app.use(express.static(__dirname + '/build'));
+var static_folder = process.env.NODE_ENV === 'production' ? '/public' : '/build';
+app.use(express.static(__dirname + static_folder));
 
 mongoose.connection.on( 'error', function(err) {
   console.log( 'connection failed: ' + err);
@@ -22,10 +23,20 @@ connection.on( 'connected', function() {
 app.use('/api', authenticat.router);
 app.use('/api', familyTreeRouter);
 
+<<<<<<< HEAD
 app.get('/userdetails', authenticat.tokenAuth, function(req, res) {
   res.json({username:req.user.username});
 });
 
 app.listen(3000, function() {
   console.log('server up on port 3000');
+=======
+app.get('/user', authenticat.tokenAuth, function(req, res) {
+  return res.json({username: req.user.username});
+});
+
+var port = process.env.PORT || 3000;
+app.listen(port, function() {
+  console.log('server up on port', port);
+>>>>>>> master
 });

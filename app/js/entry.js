@@ -9,11 +9,13 @@ var angular = window.angular;
 var familyTreeApp = angular.module('FamilyTreeApp', ['ngRoute', 'base64', require('angular-cookies'), 'nemLogging', 'ui-leaflet']);
 require('./familytree/familytree')(familyTreeApp);
 require('./users/users.js')(familyTreeApp);
+require('./directives/directives')(familyTreeApp);
+
 
 familyTreeApp.config(['$routeProvider', function($route) {
   $route
-  .when('/familyTrees', {
-    templateUrl: '/templates/familyTree_view.html',
+  .when('/tree', {
+    templateUrl: '/templates/family_tree_view.html',
     controller: 'FamilyTreeController'
   })
   .when('/signup', {
@@ -24,7 +26,5 @@ familyTreeApp.config(['$routeProvider', function($route) {
     templateUrl: '/templates/users/views/signupin_view.html',
     controller: 'SigninController'
   })
-  .otherwise({
-    redirectTo: '/signup'
-  });
+  .otherwise({redirectTo: '/signup'});
 }]);
