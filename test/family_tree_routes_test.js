@@ -102,7 +102,7 @@ describe("The tree routes", function() {
         name: "Sibling Test",
         birthDate: new Date(1950, 3, 17),
         deathDate: null, 
-        birthLoc: 'Seattle',
+        birthLoc: "Seattle",
         birthCoords: [47.6062, -122.3321],
         deathLoc: '',
         deathCoords: [],
@@ -111,7 +111,7 @@ describe("The tree routes", function() {
       })
       .end(function(err, res) {
         expect(err).to.eql(null);
-        expect(res.body.msg).to.eql("Member added")
+        expect(res.body.msg).to.eql("Member added");
         done();
       });
   });
@@ -124,7 +124,7 @@ describe("The tree routes", function() {
         name: "In-Law Test",
         birthDate: new Date(1925, 3, 17),
         deathDate: null, 
-        birthLoc: 'Seattle',
+        birthLoc: "Seattle",
         birthCoords: [47.6062, -122.3321],
         deathLoc: '',
         deathCoords: [],
@@ -133,12 +133,33 @@ describe("The tree routes", function() {
       })
       .end(function(err, res) {
         expect(err).to.eql(null);
-        expect(res.body.msg).to.eql("Member added")
+        expect(res.body.msg).to.eql("Member added");
         done();
       });
   });
 
-  it("should add a new member with parents and children")
+  it("should add a new member with one parent specified (POST)", function(done) {
+    chai.request(url)
+      .post('/api/tree')
+      .send({
+        token: token,
+        name: "Affair Child Test",
+        birthDate: new Date(2015, 12, 12),
+        birthLoc: "New York, NY",
+        birthCoords: [40.713, -74.001],
+        deathLoc: '',
+        deathCoords: [],
+        parents: [spouse_node._id],
+        children: []
+      })
+      .end(function(err, res) {
+        expect(err).to.eql(null);
+        expect(res.body.msg).to.eql("Member added");
+        done();
+      });
+  });
+
+  it("should add a new member with parents and children (POST)")
 
   it("should update a family member's data (PUT)", function(done) {
     chai.request(url)
@@ -173,7 +194,7 @@ describe("The tree routes", function() {
       );
     });
 
-    it("should create a new user node and return it", function(done) {
+    it("should create a new user node and return it (POST)", function(done) {
       chai.request(url)
         .post('/api/user-tree')
         .send({
@@ -188,7 +209,7 @@ describe("The tree routes", function() {
         });
     });
 
-    it("should return an existing user's family's nodes", function(done) {
+    it("should return an existing user's family's nodes (POST)", function(done) {
       chai.request(url)
         .post('/api/user-tree')
         .send({
