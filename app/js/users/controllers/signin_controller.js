@@ -1,6 +1,6 @@
 module.exports = function(app) {
   app.controller('SigninController', ['$scope', '$http', '$base64', '$location', '$cookies', function($scope, $http, $base64, $location, $cookies) {
-    $scope.h1Text = 'Family Tree Story Mapper Signin'
+    $scope.h3Text = 'Signin page'
     $scope.buttonText = 'Log In';
     $scope.confirmPassword = false;
     $scope.wrongPassword = false;
