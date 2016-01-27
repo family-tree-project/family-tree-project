@@ -4,8 +4,20 @@
   <meta charset="UTF-8">
   <title>AWESOME FAMILY TREE VISUALIZER</title>
   <link rel="stylesheet" href="styles/styles.min.css">
+  <!-- Compressed CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/foundation/6.1.2/foundation.min.css">
+  <!-- Compressed JavaScript -->
+  <script src="https://cdn.jsdelivr.net/foundation/6.1.2/foundation.min.js"></script>
 </head>
-<body>
+
+<body id="background">
+  <ul class="menu-bar">
+    <li><a href="templates/about-us-template.html">About Us</a></li>
+  </ul>
+  <div>
+    <h1 class="subheader">FamilyTree Story Mapper</h1>
+  </div>
+
   <div data-ng-controller="AuthController" data-ng-init="getUser()">
     <main data-ng-view></main>
   </div>

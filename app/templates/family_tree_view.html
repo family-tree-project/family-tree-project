@@ -1,13 +1,13 @@
 <div data-ng-controller="FamilyTreeController" data-ng-init="drawTree()">
-  <div>
-    <h1>FamilyTree Story Mapper</h1>
-  </div>
 
-  <div>
-    <leaflet defaults="defaults" markers="markers" height="480px" width="640px"></leaflet>
-  </div>
 
-  <div id="graph-container"></div>
+  <div class="grid-block">
+
+
+    <leaflet class="grid-block" id="leaflet-container" defaults="defaults" markers="markers"></leaflet>
+
+    <div class="grid-block" id="graph-container"></div>
+  </div>
 
   <div data-add-person-form-directive data-family-members="familyMembers" data-check-death-geocode="checkDeathGeocode(location)" data-check-birth-geocode="checkBirthGeocode(location)" data-new-relative="newRelative" data-geo-code-results="geoCodeResults" data-add-relative="addRelative(relative)"></div>
 
