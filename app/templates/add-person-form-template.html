@@ -1,36 +1,20 @@
-<form data-ng-controller="FamilyTreeController">
-  <div class="row">
-    <div class="large-12 columns">
-      <label for="newRelativeName">Name:</label>
-      <input type="text" id="newRelativeName" data-ng-model="newRelative.name"></input>
-    </div>
-  </div>
+<form data-ng-submit="addRelative({relative: newRelative})">
+  <label for="newRelativeName">Name:</label>
+  <input type="text" id="newRelativeName" data-ng-model="newRelative.name"></input>
 
-  <div class="row">
-    <div class="large-4 columns">
-      <label for="newRelativeBirth">Date of Birth:</label>
-      <input type="text" id="newRelativeBirth" data-ng-model="newRelative.birthDate"></input>
-    </div>
+  <label for="newRelativeBirth">Date of Birth:</label>
+  <input type="date" id="newRelativeBirth" data-ng-model="newRelative.birthDate"></input>
 
-    <div class="large-4 columns">
-      <label for="newRelativeDeath">Date of Death:</label>
-      <input type="text" id="newRelativeDeath" data-ng-model="newRelative.deathDate"></input>
-    </div>
-  </div>
+  <label for="newRelativeBirthLoc">Location of Birth:</label>
+  <input type="text" id="newRelativeBirthLoc" data-ng-model="newRelative.birthLoc"></input>
+  <button type="button" data-ng-click="checkBirthGeocode({location: newRelative.birthLoc})">Find this location!</button>
 
-  <div class="row">
-    <div class="large-4 columns">
-      <label for="newRelativeBirthLoc">Location of Birth:</label>
-      <input type="text" id="newRelativeBirthLoc" data-ng-model="newRelative.birthLoc"></input>
-      <button data-ng-click="checkBirthGeocode(newRelative.birthLoc)">Find this location!</button>
-    </div>
+  <label for="newRelativeDeath">Date of Death:</label>
+  <input type="date" id="newRelativeDeath" data-ng-model="newRelative.deathDate"></input>
 
-    <div class="large-4 columns">
-      <label for="newRelativeDeathLoc">Location of Death:</label>
-      <input type="text" id="newRelativeDeathLoc" data-ng-model="newRelative.deathLoc"></input>
-      <button data-ng-click="checkDeathGeocode(newRelative.deathLoc)">Find this location!</button>
-    </div>
-  </div>
+  <label for="newRelativeDeathLoc">Location of Death:</label>
+  <input type="text" id="newRelativeDeathLoc" data-ng-model="newRelative.deathLoc"></input>
+  <button type="button" data-ng-click="checkDeathGeocode({location: newRelative.deathLoc})">Find this location!</button>
 
   <div data-list-directive data-title="geoCodeResults">
     <li data-ng-repeat="location in geoCodeResults.results[0].locations">
@@ -40,20 +24,16 @@
       {{location.adminArea1Type}}: {{location.adminArea1}}
       <img src="{{location.mapUrl}}" alt="thumbmap" />
     </li>
+  </div>
+
+  <label for="parent1">Parent 1:</label>
+  <select id="parent1" data-ng-model="newRelative.parent1" data-ng-options="relative.name for relative in familyMembers"></select>
+
+  <label for="parent2">Parent 2:</label>
+  <select id="parent2" data-ng-model="newRelative.parent2" data-ng-options="relative.name for relative in familyMembers">Parent 2</select>
+
+  <label for="child">Child:</label>
+  <select id="child" data-ng-model="newRelative.child" data-ng-options="relative.name for relative in familyMembers">Child</select>
 
   <button type="submit">Add Relative!</button>
 </form>
-
-
-<!-- name
-
-data-ng-submit="addRelative()"
-
-birthDate: Date
-deathDate: Date
-
-birthLoc: {placeName: String, location: [lat,long]}
-deathLoc: {placeName: String, location: [lat,long]}
-
-children: []
-parents: [] -->
