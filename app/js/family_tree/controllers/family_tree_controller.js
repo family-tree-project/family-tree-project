@@ -16,10 +16,19 @@ module.exports = function(app) {
       // directed graph layout algorithm
       require('../../plugins/sigma.layout.dagre.js');
 
+      // for making arcs on the map
+      // require('../../plugins/arc.js');
+
       // sigma settings if needed
       var settings = {
 
       };
+
+
+      var s = new sigma({
+        container: 'graph-container',
+        settings: settings
+      });
 
       // styling settings applied to graph visualization
       var treeStyles = {
@@ -39,10 +48,6 @@ module.exports = function(app) {
       };
 
       $scope.drawTree = function() {
-        var s = new sigma({
-          container: 'graph-container',
-          settings: settings
-        });
 
         sigma.neo4j.cypher(
           { url: 'http://localhost:7474', user: 'neo4j', password: 'family' },
@@ -69,11 +74,17 @@ module.exports = function(app) {
               sigma.layouts.dagre.start(s);
 
               s.refresh();
+              $scope.mapFamily();
 
             }
         );
       }; // end drawTree function
 
+      $scope.clearGraph = function() {
+        s.graph.clear();
+      };
+
+      // defaults for leaflet
       angular.extend($scope, {
 
         defaults: {
@@ -82,7 +93,10 @@ module.exports = function(app) {
           tap: false,
           tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           maxZoom: 14
-        }
+        },
+        markers: {
+          }
+
       });
 
       $scope.newRelative = {};
@@ -108,8 +122,11 @@ module.exports = function(app) {
 
         $http.post('/api/tree', relative)
           .then(function(res) {
+            $scope.clearGraph();
             $scope.drawTree();
             $scope.newRelative = {};
+            $scope.geoCodeResults = {};
+            $scope.getUser();
           }, function(err) {
             console.log(err.data);
           }
@@ -152,6 +169,38 @@ module.exports = function(app) {
             }
           });
       }; // End checkDeathGeocode
+
+      $scope.mapFamily = function() {
+        var markers = {};
+        for (var i = 0; i < $scope.familyMembers.length; i++) {
+          if ($scope.familyMembers[i].birthCoords) {
+            var markerName = $scope.familyMembers[i].name + 'Birth';
+            markers[markerName] = {
+              lng: $scope.familyMembers[i].birthCoords[1],
+              lat: $scope.familyMembers[i].birthCoords[0],
+              message: 'Name: ' + $scope.familyMembers[i].name + '<br>'
+                + 'Born: ' + $scope.familyMembers[i].birthLoc
+                + '<br>' + $scope.familyMembers[i].birthDate
+            };
+          }
+          if ($scope.familyMembers[i].deathCoords) {
+            var markerName = $scope.familyMembers[i].name + 'Death';
+            markers[markerName] = {
+              lng: $scope.familyMembers[i].deathCoords[1],
+              lat: $scope.familyMembers[i].deathCoords[0],
+              message: 'Name: ' + $scope.familyMembers[i].name + '<br>'
+                + 'Died: ' + $scope.familyMembers[i].deathLoc
+                + '<br>' + $scope.familyMembers[i].deathDate
+            };
+          }
+        }
+        console.log(markers);
+        angular.extend($scope, {
+          markers: markers
+        });
+      };
+
+
 
     }]);
 };

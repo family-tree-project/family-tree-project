@@ -9,14 +9,14 @@ module.exports = function(app) {
         $http.post('/api/user-tree', res.data)
         .then(function(res) {
           $scope.familyMembers = res.data.data;
-          $location.path('/tree')
+          $location.path('/tree');
         }, function(err) {
           console.log(err);
         });
       }, function(err) {
         console.log(err);
       });
-    }
+    };
 
     $scope.logOut = function() {
       $scope.token = null;
