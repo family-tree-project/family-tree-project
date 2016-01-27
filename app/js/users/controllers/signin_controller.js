@@ -4,6 +4,7 @@ module.exports = function(app) {
     $scope.buttonText = 'Log In';
     $scope.confirmPassword = false;
     $scope.wrongPassword = false;
+    $scope.user = {};
     $scope.changePlacesText = 'Or Create A New User';
 
     $scope.changePlaces = function() {
