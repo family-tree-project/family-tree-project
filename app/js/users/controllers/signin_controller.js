@@ -1,5 +1,6 @@
 module.exports = function(app) {
   app.controller('SigninController', ['$scope', '$http', '$base64', '$location', '$cookies', function($scope, $http, $base64, $location, $cookies) {
+    $scope.h3Text = 'Signin page'
     $scope.buttonText = 'Log In';
     $scope.confirmPassword = false;
     $scope.wrongPassword = false;
@@ -20,7 +21,6 @@ module.exports = function(app) {
       })
       .then(function(res) {
         console.log(res.data.token);
-        $scope.wrongPassword = res.data.wrongPassword;
         $cookies.put('token', res.data.token);
         $scope.getUser();   // from auth controller;
       }, function(err) {

@@ -1,10 +1,11 @@
 module.exports = function(app) {
   app.controller('SignupController', ['$scope', '$http', '$location', '$cookies', function($scope, $http, $location, $cookies) {
+    $scope.h3Text = 'Signup page'
     $scope.buttonText = 'Create New User';
     $scope.confirmPassword = true;
     $scope.nameTaken = false;
     $scope.user = {};
-    $scope.changePlacesText = 'Or Sign Into An Existing User';
+    $scope.changePlacesText = 'Or SignIn';
     console.log($location.path());
 
     $scope.passwordMatch = function(user) {
