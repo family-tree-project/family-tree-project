@@ -8,7 +8,7 @@ var angular = window.angular;
 
 var familyTreeApp = angular.module('FamilyTreeApp', ['ngRoute', 'base64', require('angular-cookies'), 'nemLogging', 'ui-leaflet']);
 require('./users/users.js')(familyTreeApp);
-require('./familytree/familytree')(familyTreeApp);
+require('./family_tree/family_tree')(familyTreeApp);
 require('./directives/directives')(familyTreeApp);
 
 

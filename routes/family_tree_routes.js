@@ -28,7 +28,7 @@ DELETE  - remove all nodes related to user if account is deleted
 
 //default
 familyTreeRouter.get('/', function(req, res) {
-  db.cypherQuery("MATCH path=()-[d*]->(n:testUser)-[a*]->() RETURN relationships(path)", function(err, results) {
+  db.cypherQuery("MATCH (p:Person)-[r*0..]-(:sampleUser) RETURN p,r", function(err, results) {
       if(err) {
         return handleError(err, res, 500);
       }
@@ -44,8 +44,10 @@ var queries = function() {
   var node_params = "name: {name},"
     + "birthDate: {birthDate},"
     + "birthLoc: {birthLoc},"
+    + "birthCoords: {birthCoords},"
     + "deathDate: {deathDate},"
     + "deathLoc: {deathLoc},"
+    + "deathCoords: {deathCoords},"
     + "nodeSize: 5";  //arbitrary field that the rendering engine needs
 
   return {
@@ -87,8 +89,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
           name: req.body.name,
           birthDate: req.body.birthDate,
           birthLoc: req.body.birthLoc,
-          deathDate: req.body.deathDate,
-          deathLoc: req.body.deathLoc,
+          birthCoords: req.body.birthCoords,
+          deathDate: req.body.deathDate || '',
+          deathLoc: req.body.deathLoc || '',
+          deathCoords: req.body.deathCoords || '',
           offspringNodeID: result.data[0]._id
         },
         function(err, result) {
@@ -109,8 +113,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       name: req.body.name,
       birthDate: req.body.birthDate,
       birthLoc: req.body.birthLoc,
-      deathDate: req.body.deathDate,
-      deathLoc: req.body.deathLoc,
+      birthCoords: req.body.birthCoords,
+      deathDate: req.body.deathDate || '',
+      deathLoc: req.body.deathLoc || '',
+      deathCoords: req.body.deathCoords || [],
       childNodeID: req.body.children[0]
     },
     function(err, result) {
@@ -132,8 +138,10 @@ familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, r
         name: req.body.name || node.name,
         birthDate: req.body.birthDate || node.birthDate,
         birthLoc: req.body.birthLoc || node.birthLoc,
+        birthCoords: req.body.birthCoords || node.birthCoords,
         deathDate: req.body.deathDate || node.deathDate,
         deathLoc: req.body.deathLoc || node.deathLoc,
+        birthCoords: req.body.birthCoords || node.birthCoords,
         nodeSize: 5 //if this was previously a 'Not Specified' person, make its new size equal to a real person
       },
       function(err, result) {
