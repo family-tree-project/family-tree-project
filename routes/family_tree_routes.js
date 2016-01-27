@@ -165,7 +165,8 @@ familyTreeRouter.post('/user-tree', jsonParser, authenticat.tokenAuth, function(
     if(!userNodeArray.length) { //no node found; create new one, and return it as an array of objects
       db.insertNode({ //properties
           username: req.body.username,
-          name: req.body.username
+          name: req.body.username,
+          nodeSize: 5
         }, ['User', 'Person'], //labels
         function(err, result) {
           //result is a JSON for the node
