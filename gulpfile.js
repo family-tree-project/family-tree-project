@@ -158,9 +158,9 @@ gulp.task('karma', function() {
             WATCH TASKS
  * * * * * * * * * * * * * * * * * */
 
-gulp.task('build:watch', function() {
+gulp.task('build:watch', ['build'], function() {
   gulp.watch(staticFiles, ['static:dev']);
-  gulp.watch(appFiles, ['webpack:dev', 'karma']);
+  gulp.watch(appFiles, ['webpack:dev']);
   gulp.watch('app/styles/**/*.scss', ['styles:dev']);
   //gulp.watch('test/client/*.js', ['webpack:test']);
 });
@@ -178,5 +178,5 @@ gulp.task('build', ['static:dev', 'webpack:dev', 'styles:dev']);
 gulp.task('build:prod', ['static:prod', 'webpack:prod', 'styles:prod']);
 gulp.task('lint', ['jshint:backendFiles', 'jshint:testfiles', 'jshint:devfiles']);
 gulp.task('test', ['mocha', 'karma']);
-gulp.task('watch', ['build:watch', 'app:watch']);
+gulp.task('watch', ['build:watch']);
 gulp.task('default', ['build', 'watch']);

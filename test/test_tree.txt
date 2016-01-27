@@ -1,4 +1,4 @@
-CREATE (f:Person {name: 'father'})-[:PARENTED]->(testParents:Offspring)<-[:PARENTED]-(m:Person {name: 'mother'})
-CREATE (testParents)-[:CHILD]->(u:testUser:Person {name: 'tester', username: 'tester'})-[:PARENTED]->(testCouple:Offspring)<-[:PARENTED]-(s:Person {name: 'spouse'})
-CREATE (ch:Person {name: 'child'})<-[:CHILD]-(testCouple)
+CREATE (f:Person {name: 'father', nodeSize: 5})-[:PARENTED]->(testParents:Offspring {nodeSize: 1})<-[:PARENTED]-(m:Person {name: 'mother', nodeSize: 5})
+CREATE (testParents)-[:CHILD]->(u:testUser:Person {name: 'tester', username: 'tester', nodeSize: 5})-[:PARENTED]->(testCouple:Offspring {nodeSize: 1})<-[:PARENTED]-(s:Person {name: 'spouse', nodeSize: 5})
+CREATE (ch:Person {name: 'child', nodeSize: 5})<-[:CHILD]-(testCouple)
 RETURN u,ch,s,f,m,testCouple,testParents

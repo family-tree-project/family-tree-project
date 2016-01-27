@@ -102,8 +102,10 @@ describe("The tree routes", function() {
         name: "Sibling Test",
         birthDate: new Date(1950, 3, 17),
         deathDate: null, 
-        birthLoc: [47.6062, -122.3321],
-        deathLoc: [],
+        birthLoc: 'Seattle',
+        birthCoords: [47.6062, -122.3321],
+        deathLoc: '',
+        deathCoords: [],
         parents: [mother_node._id, father_node._id],
         children: []
       })
@@ -122,8 +124,10 @@ describe("The tree routes", function() {
         name: "In-Law Test",
         birthDate: new Date(1925, 3, 17),
         deathDate: null, 
-        birthLoc: [47.6062, -122.3321],
-        deathLoc: [],
+        birthLoc: 'Seattle',
+        birthCoords: [47.6062, -122.3321],
+        deathLoc: '',
+        deathCoords: [],
         parents: [],
         children: [spouse_node._id]
       })
@@ -145,8 +149,10 @@ describe("The tree routes", function() {
         name: 'dad',
         birthDate: new Date(1922, 5, 30),
         deathDate: new Date(2005, 10, 4),
-        birthLoc: [52.302, 13.2356],
-        deathLoc: [47.6062, -122.3321]
+        birthLoc: 'Someplace',
+        birthCoords: [52.302, 13.2356],
+        deathLoc: 'Seattle',
+        deathCoords: [47.6062, -122.3321]
       })
       .end(function(err, res) {
         expect(err).to.eql(null);
