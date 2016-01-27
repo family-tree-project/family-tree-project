@@ -1,12 +1,19 @@
 #graph-container {
-  float:left;
   background: #FFFFFF;
   width: 46%;
   height: 480px;
   max-width: 800px;
   margin-left: 108px;
   overflow: hidden;
-    }
+  position: relative;
+}
+
+#graph-container * {
+  border: 10px solid black;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
 
 #leaflet-container {
   float: left;
@@ -17,3 +24,4 @@
   margin-right: 8px;
   overflow: hidden;
 }
+

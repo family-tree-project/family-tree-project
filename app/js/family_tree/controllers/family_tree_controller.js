@@ -45,7 +45,7 @@ module.exports = function(app) {
         });
 
         sigma.neo4j.cypher(
-          { url: 'http://localhost:7474', user: 'neo4j', password: 'salmonz' },
+          { url: 'http://localhost:7474', user: 'neo4j', password: 'family' },
           "MATCH (n)-[r*0..]-(:User {username: '" + $scope.currentUser + "'}) RETURN n,r",
           s,
             function(s) {
