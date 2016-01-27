@@ -2,19 +2,21 @@
   <!-- <div class="row"> -->
       <div class="large-4 columns">
         <label for="newRelativeName">Name:</label>
-        <input type="text" id="newRelativeName" data-ng-model="newRelative.name"></input>
+        <input type="text" id="newRelativeName" data-ng-model="newRelative.name" required></input>
       </div>
   <!-- </div> -->
   <div class="row">
       <div class="large-4 columns">
         <label for="newRelativeBirth">Date of Birth:</label>
-        <input type="date" id="newRelativeBirth" data-ng-model="newRelative.birthDate"></input>
+        <input type="date" id="newRelativeBirth" data-ng-model="newRelative.birthDate" required></input>
       </div>
 
       <div class="large-4 columns">
         <label for="newRelativeBirthLoc">Location of Birth:</label>
-        <input type="text" id="newRelativeBirthLoc" data-ng-model="newRelative.birthLoc"></input>
+        <input type="text" id="newRelativeBirthLoc" data-ng-model="newRelative.birthLoc" required></input>
         <button type="button" data-ng-click="checkBirthGeocode({location: newRelative.birthLoc})">Find this location!</button>
+        <label for="birthCoords">Birth Coordinates</label>
+        <input type="text" id="birthCoords" data-ng-model="newRelative.birthCoords" required></input>
       </div>
     </div>
   <div class="row">
@@ -26,6 +28,8 @@
         <label for="newRelativeDeathLoc">Location of Death:</label>
         <input type="text" id="newRelativeDeathLoc" data-ng-model="newRelative.deathLoc"></input>
         <button type="button" data-ng-click="checkDeathGeocode({location: newRelative.deathLoc})">Find this location!</button>
+        <label for="deathCoords">Death Coordinates</label>
+        <input type="text" id="deathCoords" data-ng-model="newRelative.deathCoords"></input>
       </div>
     </div>
   <div class="row">
