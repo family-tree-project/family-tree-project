@@ -49,10 +49,6 @@ module.exports = function(app) {
           "MATCH (n)-[r*0..]-(:User {username: '" + $scope.currentUser + "'}) RETURN n,r",
           s,
             function(s) {
-              console.log('Number of nodes :'+ s.graph.nodes().length);
-              console.log(s.graph.nodes());
-              console.log('Number of edges :'+ s.graph.edges().length);
-              console.log(s.graph.edges());
               // sigma.plugins.killDesign(s);
               var design = sigma.plugins.design(s);
               // console.log(design);
@@ -103,13 +99,12 @@ module.exports = function(app) {
 
       //pulls info from FORM and sends post request
       $scope.addRelative = function(relative) {
+        //Create two arrays to pass that the backend expects.
         relative.parents = [];
         relative.children = [];
         if(relative.parent1) relative.parents.push(relative.parent1._id);
         if(relative.parent2) relative.parents.push(relative.parent2._id);
         if(relative.child) relative.children.push(relative.child._id);
-        
-        console.log('Added Relative!', relative);
 
         $http.post('/api/tree', relative)
           .then(function(res) {
@@ -129,18 +124,14 @@ module.exports = function(app) {
           + mapQuestKey
           + '&location=' + location
           + '&callback=JSON_CALLBACK';
-        console.log('Calling geocoder API: ' + url);
 
         $http.jsonp(url)
           .success(function(data) {
             $scope.geoCodeResults = data;
-            console.log($scope.geoCodeResults);
             if (data.results[0].locations.length == 1) {
               $scope.newRelative.birthCoords = //need to be put in array for Neo4j
                 [data.results[0].locations[0].latLng.lat,
                 data.results[0].locations[0].latLng.lng];
-              console.log("coords saved: ");
-              console.log($scope.newRelative);
             }
           });
       }; // End checkBirthGeocode
@@ -150,12 +141,10 @@ module.exports = function(app) {
           + mapQuestKey
           + '&location=' + location
           + '&callback=JSON_CALLBACK';
-        console.log('Calling geocoder API: ' + url);
 
         $http.jsonp(url)
           .success(function(data) {
             $scope.geoCodeResults = data;
-            console.log($scope.geoCodeResults);
             if (data.results[0].locations.length == 1) {
               $scope.newRelative.deathCoords = //need to be put in array for Neo4j
                 [data.results[0].locations[0].latLng.lat,

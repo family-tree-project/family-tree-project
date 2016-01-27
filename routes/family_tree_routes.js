@@ -73,9 +73,6 @@ var queries = function() {
 familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
   //User will give name, birthDate, birthLoc, deathDate, deathLoc, parents and/or children (by id)
   //When specifying parents, both must exist (for now) to find their offspring node
-
-  console.log("POST /tree:\n", req.body);
-
   if(req.body.parents.length === 2) {
     db.cypherQuery(queries.findParents,
       {
@@ -119,7 +116,7 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       birthCoords: req.body.birthCoords,
       deathDate: req.body.deathDate || '',
       deathLoc: req.body.deathLoc || '',
-      deathCoords: req.body.deathCoords || '',
+      deathCoords: req.body.deathCoords || [],
       childNodeID: req.body.children[0]
     },
     function(err, result) {
