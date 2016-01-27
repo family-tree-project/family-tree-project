@@ -95,12 +95,8 @@ module.exports = function(app) {
           maxZoom: 14
         },
         markers: {
-          testmarker: {
-            lat: 47.6,
-            lng: -122.33,
-            message: 'test marker'
           }
-        }
+
       });
 
       $scope.newRelative = {};
@@ -189,7 +185,7 @@ module.exports = function(app) {
           }
           if ($scope.familyMembers[i].deathCoords) {
             var markerName = $scope.familyMembers[i].name + 'Death';
-            markers[$scope.familyMembers[i].name] = {
+            markers[markerName] = {
               lng: $scope.familyMembers[i].deathCoords[1],
               lat: $scope.familyMembers[i].deathCoords[0],
               message: 'Name: ' + $scope.familyMembers[i].name + '<br>'
@@ -204,16 +200,7 @@ module.exports = function(app) {
         });
       };
 
-      var start = { x: -122, y: 48 };
-      var end = { x: -77, y: 39 };
-      var generator = new arc.GreatCircle(start, end, {'name': 'Seattle to DC'});
-      var line = generator.Arc(100,{offset:10});
-      var geojson = line.json();
 
-      leafletData.getMap().then(function(map) {
-        console.log('plotting arc');
-        L.geoJson(geojson).addTo(map);
-      });
 
     }]);
 };
