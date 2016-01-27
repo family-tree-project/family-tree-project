@@ -8,7 +8,7 @@ module.exports = function(app) {
         $scope.currentUser = res.data.username;
         $http.post('/api/user-tree', res.data)
         .then(function(res) {
-          $scope.familyMembers = res.data;
+          $scope.familyMembers = res.data.data;
           $location.path('/tree')
         }, function(err) {
           console.log(err);

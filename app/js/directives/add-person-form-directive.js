@@ -3,11 +3,14 @@ module.exports = function(app) {
     return {
       restrict: 'AC',
       templateUrl: '/templates/add-person-form-template.html',
-      transclude: true,
       replace: false,
       scope: {
-        resource: '=',
-        title: '@'
+        addRelative: '&',
+        familyMembers: '=',
+        checkDeathGeocode: '&',
+        checkBirthGeocode: '&',
+        geoCodeResults: '=',
+        newRelative: '='
       }
     }
   });
