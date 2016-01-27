@@ -1,6 +1,6 @@
 module.exports = function(app) {
   app.controller('FamilyTreeController', ['$scope', 'leafletData', '$http',
-    function($scope,leafletData, $http) {
+    function($scope, leafletData, $http) {
 
       var mapQuestKey = 'qszwthBye44A571jhqvCn4AWhTsEILRT';
 
@@ -30,7 +30,7 @@ module.exports = function(app) {
           },
 
           size: {
-            by: 'neo4j_data.nodeType',
+            by: 'neo4j_data.nodeSize',
             bins: 10,
             min: 1,
             max: 20
@@ -45,8 +45,8 @@ module.exports = function(app) {
         });
 
         sigma.neo4j.cypher(
-          { url: 'http://localhost:7474', user: 'neo4j', password: 'family' },
-          'MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 100',
+          { url: 'http://localhost:7474', user: 'neo4j', password: 'salmonz' },
+          "MATCH (n)-[r*0..]-(:User {username: '" + $scope.currentUser + "'}) RETURN n,r",
           s,
             function(s) {
               console.log('Number of nodes :'+ s.graph.nodes().length);
@@ -103,17 +103,22 @@ module.exports = function(app) {
 
       //pulls info from FORM and sends post request
       $scope.addRelative = function(relative) {
-        if (parent1) relative.parent1 = relative.parent1._id;
-        if (parent2) relative.parent2 = relative.parent2._id;
-        if (child) relative.child = relative.child._id;
-        console.log('Added Relative!' + relative);
-        // $http.post('/tree', relative)
-        // .then(function(res) {
-        //   $scope.drawTree();
-        //   $scope.newRelative = {};
-        // }, function(err) {
-        //   console.log(err.data);
-        // });
+        relative.parents = [];
+        relative.children = [];
+        if(relative.parent1) relative.parents.push(relative.parent1._id);
+        if(relative.parent2) relative.parents.push(relative.parent2._id);
+        if(relative.child) relative.children.push(relative.child._id);
+        
+        console.log('Added Relative!', relative);
+
+        $http.post('/api/tree', relative)
+          .then(function(res) {
+            $scope.drawTree();
+            $scope.newRelative = {};
+          }, function(err) {
+            console.log(err.data);
+          }
+        );
       };
 
 
@@ -131,7 +136,9 @@ module.exports = function(app) {
             $scope.geoCodeResults = data;
             console.log($scope.geoCodeResults);
             if (data.results[0].locations.length == 1) {
-              $scope.newRelative.birthCoords = data.results[0].locations[0].latLng;
+              $scope.newRelative.birthCoords = //need to be put in array for Neo4j
+                [data.results[0].locations[0].latLng.lat,
+                data.results[0].locations[0].latLng.lng];
               console.log("coords saved: ");
               console.log($scope.newRelative);
             }
@@ -150,7 +157,9 @@ module.exports = function(app) {
             $scope.geoCodeResults = data;
             console.log($scope.geoCodeResults);
             if (data.results[0].locations.length == 1) {
-              $scope.newRelative.deathCoords = data.results[0].locations[0].latLng;
+              $scope.newRelative.deathCoords = //need to be put in array for Neo4j
+                [data.results[0].locations[0].latLng.lat,
+                data.results[0].locations[0].latLng.lng];
             }
           });
       }; // End checkDeathGeocode
