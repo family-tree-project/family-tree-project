@@ -4,13 +4,15 @@ module.exports = function(app) {
       restrict: 'AC',
       templateUrl: '/templates/add_person_form_template.html',
       replace: false,
+      transclude: true,
       scope: {
-        addRelative: '&',
+        buttonText: '@',
+        save: '&',
         familyMembers: '=',
         checkDeathGeocode: '&',
         checkBirthGeocode: '&',
         geoCodeResults: '=',
-        newRelative: '='
+        relative: '='
       }
     }
   });
