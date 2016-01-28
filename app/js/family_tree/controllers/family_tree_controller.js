@@ -122,11 +122,12 @@ module.exports = function(app) {
 
         $http.post('/api/tree', relative)
           .then(function(res) {
+            $scope.getUser();
             $scope.clearGraph();
             $scope.drawTree();
             $scope.newRelative = {};
             $scope.geoCodeResults = {};
-            $scope.getUser();
+
           }, function(err) {
             console.log(err.data);
           }
