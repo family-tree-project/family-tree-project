@@ -1,35 +1,35 @@
-<form data-ng-submit="addRelative({relative: newRelative})">
+<form data-ng-submit="save({relative: relative})">
   <!-- <div class="row"> -->
       <div class="large-4 columns">
-        <label for="newRelativeName">Name:</label>
-        <input type="text" id="newRelativeName" data-ng-model="newRelative.name" required></input>
+        <label for="relativeName">Name:</label>
+        <input type="text" id="relativeName" data-ng-model="relative.name" required></input>
       </div>
   <!-- </div> -->
   <div class="row">
       <div class="large-4 columns">
-        <label for="newRelativeBirth">Date of Birth:</label>
-        <input type="date" id="newRelativeBirth" data-ng-model="newRelative.birthDate" required></input>
+        <label for="relativeBirth">Date of Birth:</label>
+        <input type="date" id="relativeBirth" data-ng-model="relative.birthDate" required></input>
       </div>
 
       <div class="large-4 columns">
-        <label for="newRelativeBirthLoc">Location of Birth:</label>
-        <input type="text" id="newRelativeBirthLoc" data-ng-model="newRelative.birthLoc" required></input>
-        <button type="button" data-ng-click="checkBirthGeocode({location: newRelative.birthLoc})">Find this location!</button>
+        <label for="relativeBirthLoc">Location of Birth:</label>
+        <input type="text" id="relativeBirthLoc" data-ng-model="relative.birthLoc" required></input>
+        <button type="button" data-ng-click="checkBirthGeocode({location: relative.birthLoc})">Find this location!</button>
         <label for="birthCoords">Birth Coordinates</label>
-        <input type="text" id="birthCoords" data-ng-model="newRelative.birthCoords" required></input>
+        <input type="text" id="birthCoords" data-ng-model="relative.birthCoords" required></input>
       </div>
     </div>
   <div class="row">
       <div class="large-4 columns">
-        <label for="newRelativeDeath">Date of Death:</label>
-        <input type="date" id="newRelativeDeath" data-ng-model="newRelative.deathDate"></input>
+        <label for="relativeDeath">Date of Death:</label>
+        <input type="date" id="relativeDeath" data-ng-model="relative.deathDate"></input>
       </div>
       <div class="large-4 columns">
-        <label for="newRelativeDeathLoc">Location of Death:</label>
-        <input type="text" id="newRelativeDeathLoc" data-ng-model="newRelative.deathLoc"></input>
-        <button type="button" data-ng-click="checkDeathGeocode({location: newRelative.deathLoc})">Find this location!</button>
+        <label for="relativeDeathLoc">Location of Death:</label>
+        <input type="text" id="relativeDeathLoc" data-ng-model="relative.deathLoc"></input>
+        <button type="button" data-ng-click="checkDeathGeocode({location: relative.deathLoc})">Find this location!</button>
         <label for="deathCoords">Death Coordinates</label>
-        <input type="text" id="deathCoords" data-ng-model="newRelative.deathCoords"></input>
+        <input type="text" id="deathCoords" data-ng-model="relative.deathCoords"></input>
       </div>
     </div>
   <div class="row">
@@ -48,17 +48,18 @@
     <div class="row">
       <div class="large-4 columns">
         <label for="parent1">Parent 1:</label>
-        <select id="parent1" data-ng-model="newRelative.parent1" data-ng-options="relative.name for relative in familyMembers"></select>
+        <select id="parent1" data-ng-model="relative.parent1" data-ng-options="relative.name for relative in familyMembers"></select>
       </div>
       <div class="large-4 columns">
         <label for="parent2">Parent 2:</label>
-        <select id="parent2" data-ng-model="newRelative.parent2" data-ng-options="relative.name for relative in familyMembers">Parent 2</select>
+        <select id="parent2" data-ng-model="relative.parent2" data-ng-options="relative.name for relative in familyMembers">Parent 2</select>
       </div>
       <div class="large-4 columns">
         <label for="child">Child:</label>
-        <select id="child" data-ng-model="newRelative.child" data-ng-options="relative.name for relative in familyMembers">Child</select>
+        <select id="child" data-ng-model="relative.child" data-ng-options="relative.name for relative in familyMembers">Child</select>
 
-        <button type="submit">Add Relative!</button>
+        <button type="submit">{{buttonText}}</button>
+        <ng-transclude></ng-transclude>
       </div>
     </div>
 </form>

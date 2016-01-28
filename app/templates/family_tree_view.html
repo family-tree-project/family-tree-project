@@ -9,6 +9,31 @@
     <div class="grid-block" id="graph-container"></div>
   </div>
 
-  <div data-add-person-form-directive data-family-members="familyMembers" data-check-death-geocode="checkDeathGeocode(location)" data-check-birth-geocode="checkBirthGeocode(location)" data-new-relative="newRelative" data-geo-code-results="geoCodeResults" data-add-relative="addRelative(relative)"></div>
+  <div data-add-person-form-directive
+    data-button-text="Save New Relative!"
+    data-relative="newRelative"
+    data-family-members="familyMembers"
+    data-check-death-geocode="checkDeathGeocode(location)"
+    data-check-birth-geocode="checkBirthGeocode(location)"
+    data-geo-code-results="geoCodeResults"
+    data-save="addRelative(relative)"></div>
+
+  <ul>
+    <li data-ng-repeat="relative in familyMembers">{{relative.name}}
+      <button data-ng-click="relative.editing = true">Edit me!</button>
+      <div data-add-person-form-directive
+        data-ng-if="relative.editing"
+        data-button-text="Update this Relative!"
+        data-relative="relative"
+        data-family-members="familyMembers"
+        data-check-death-geocode="checkDeathGeocode(location)"
+        data-check-birth-geocode="checkBirthGeocode(location)"
+        data-geo-code-results="geoCodeResults"
+        data-save="updateRelative(relative)">
+        <button type="button" data-ng-click="relative.editing = false">Cancel</button>
+      </div>
+
+    </li>
+  </ul>
 
 </div>
