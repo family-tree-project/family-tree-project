@@ -10,15 +10,16 @@
   <script src="https://cdn.jsdelivr.net/foundation/6.1.2/foundation.min.js"></script>
 </head>
 
-<body id="background">
+<body id="background" data-ng-controller="AuthController" data-ng-init="getUser()">
   <ul class="menu-bar">
     <li><a href="templates/about-us-template.html">About Us</a></li>
+    <li><a data-ng-if="currentUser" href data-ng-click="logOut()">Log Out of {{currentUser}}</a></li>
   </ul>
   <div>
     <h1 class="subheader">FamilyTree Story Mapper</h1>
   </div>
 
-  <div data-ng-controller="AuthController" data-ng-init="getUser()">
+  <div>
     <main data-ng-view></main>
   </div>
   <script src="https://rawgit.com/Linkurious/linkurious.js/develop/dist/sigma.min.js"></script>
