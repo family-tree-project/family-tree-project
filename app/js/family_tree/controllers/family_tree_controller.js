@@ -50,7 +50,7 @@ module.exports = function(app) {
       $scope.drawTree = function() {
 
         sigma.neo4j.cypher(
-          { url: 'http://localhost:7474', user: 'neo4j', password: 'family' },
+          { url: 'http://localhost:7474', user: 'neo4j', password: 'salmonz' },
           "MATCH (n)-[r*0..]-(:User {username: '" + $scope.currentUser + "'}) RETURN n,r",
           s,
             function(s) {
