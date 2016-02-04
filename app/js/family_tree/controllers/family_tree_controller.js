@@ -119,20 +119,23 @@ module.exports = function(app) {
         if(relative.parent1) relative.parents.push(relative.parent1._id);
         if(relative.parent2) relative.parents.push(relative.parent2._id);
         if(relative.child) relative.children.push(relative.child._id);
-
         $http.post('/api/tree', relative)
           .then(function(res) {
+            $scope.getUser();
             $scope.clearGraph();
             $scope.drawTree();
             $scope.newRelative = {};
             $scope.geoCodeResults = {};
-            $scope.getUser();
+
           }, function(err) {
             console.log(err.data);
           }
         );
       };
 
+      $scope.updateRelative = function(relative) {
+        setParents(relative);
+      }
 
       //checks appropriate geocoding
       $scope.geoCodeResults = {};
