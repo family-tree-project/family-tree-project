@@ -58,7 +58,8 @@
     "dotenv": "^2.0.0",
     "express": "^4.13.3",
     "mongoose": "^4.3.6",
-    "node-neo4j": "^2.0.3"
+    "node-neo4j": "^2.0.3",
+    "request": "^2.69.0"
   },
   "engines": {
     "node": "0.12.7"

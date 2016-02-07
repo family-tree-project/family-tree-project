@@ -24,7 +24,6 @@ module.exports = function(app) {
 
       };
 
-
       var s = new sigma({
         container: 'graph-container',
         settings: settings
@@ -48,36 +47,36 @@ module.exports = function(app) {
       };
 
       $scope.drawTree = function() {
+        $http.post('/api/draw-tree', {username: $scope.currentUser})
+          .then(function(res) {
+            var graph = sigma.neo4j.cypher_parse(res.data.results);
+            s.graph.read(graph);
 
-        sigma.neo4j.cypher(
-          { url: 'http://localhost:7474', user: 'neo4j', password: 'salmonz' },
-          "MATCH (n)-[r*0..]-(:User {username: '" + $scope.currentUser + "'}) RETURN n,r",
-          s,
-            function(s) {
-              // sigma.plugins.killDesign(s);
-              var design = sigma.plugins.design(s);
-              // console.log(design);
-              // design.setPalette(treePalette);
-              design.setStyles(treeStyles);
-              design.apply();
+            // sigma.plugins.killDesign(s);
+            var design = sigma.plugins.design(s);
+            // console.log(design);
+            // design.setPalette(treePalette);
+            design.setStyles(treeStyles);
+            design.apply();
 
-              var config = {
-                rankdir: 'TB'
-              };
+            var config = {
+              rankdir: 'TB'
+            };
 
-              var listener = sigma.layouts.dagre.configure(s, config);
+            var listener = sigma.layouts.dagre.configure(s, config);
 
-              listener.bind('start stop interpolate', function(event) {
-                console.log(event.type);
-              });
+            listener.bind('start stop interpolate', function(event) {
+              console.log(event.type);
+            });
 
-              sigma.layouts.dagre.start(s);
+            sigma.layouts.dagre.start(s);
 
-              s.refresh();
-              $scope.mapFamily();
-
-            }
-        );
+            s.refresh();
+            $scope.mapFamily();
+          },
+          function(err) {
+            console.log(err);
+          });
       }; // end drawTree function
 
       $scope.clearGraph = function() {
@@ -202,8 +201,5 @@ module.exports = function(app) {
           markers: markers
         });
       };
-
-
-
     }]);
 };
