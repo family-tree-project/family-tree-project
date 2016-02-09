@@ -16,7 +16,6 @@ var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 var r = require("request");
 var txUrl = process.env.GRAPHENEDB_URL + '/db/data/transaction/commit';
 function cypher(query,params,cb) {
-  console.log('cyphering??', query, params, cb);
   r.post({uri:txUrl,
           json:{statements:[{
             statement:query,
@@ -163,17 +162,21 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
 
 //Update a family member's data
 familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
-  db.readNode(req.body.id, function(err, node) {
-    db.updateNode(req.body.id,
+  db.readNode(req.body._id, function(err, node) {
+    if(err) {
+      return handleError(err, res, 500);
+    }
+
+    db.updateNodeById(node._id,
       {
         //db.updateNode replaces the node while keeping its ID, so all fields need to be assigned to avoid losing any
         name: req.body.name || node.name,
         birthDate: req.body.birthDate || node.birthDate,
         birthLoc: req.body.birthLoc || node.birthLoc,
         birthCoords: req.body.birthCoords || node.birthCoords,
-        deathDate: req.body.deathDate || node.deathDate,
-        deathLoc: req.body.deathLoc || node.deathLoc,
-        birthCoords: req.body.birthCoords || node.birthCoords,
+        deathDate: req.body.deathDate || node.deathDate || '',
+        deathLoc: req.body.deathLoc || node.deathLoc || '',
+        deathCoords: req.body.deathCoords || node.deathCoords || [],
         nodeSize: 5 //if this was previously a 'not specified' person, make its new size equal to a real person
       },
       function(err, result) {
@@ -225,6 +228,6 @@ familyTreeRouter.post('/user-tree', jsonParser, authenticat.tokenAuth, function(
 //Route to get data for drawing tree from back-end
 familyTreeRouter.post('/draw-tree', jsonParser, authenticat.tokenAuth, function(req, res) {
   cypher(queries.findTree, {username: req.body.username}, function(err, result) {
-      return res.json({results: result});
+    return res.json({results: result});
   });
 });

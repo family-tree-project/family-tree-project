@@ -20,7 +20,7 @@
 
   <ul>
     <li data-ng-repeat="relative in familyMembers">{{relative.name}}
-      <button data-ng-click="relative.editing = true">Edit me!</button>
+      <button data-ng-click="editing(relative, true)">Edit me!</button>
       <div data-add-person-form-directive
         data-ng-if="relative.editing"
         data-button-text="Update this Relative!"
@@ -30,7 +30,7 @@
         data-check-birth-geocode="checkBirthGeocode(location)"
         data-geo-code-results="geoCodeResults"
         data-save="updateRelative(relative)">
-        <button type="button" data-ng-click="relative.editing = false">Cancel</button>
+        <button type="button" data-ng-click="editing(relative, false)">Cancel</button>
       </div>
 
     </li>

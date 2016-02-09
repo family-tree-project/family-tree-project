@@ -12,7 +12,8 @@ module.exports = function(app) {
         checkDeathGeocode: '&',
         checkBirthGeocode: '&',
         geoCodeResults: '=',
-        relative: '='
+        relative: '=',
+        editing: '&'
       }
     }
   });

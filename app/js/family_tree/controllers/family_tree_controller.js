@@ -133,8 +133,15 @@ module.exports = function(app) {
       };
 
       $scope.updateRelative = function(relative) {
-        setParents(relative);
-      }
+        $http.put('/api/tree', relative)
+          .then(function(res) {
+            relative.editing = false;
+            console.log(res.data.msg);
+          },
+          function(err) {
+            console.log(err);
+          });
+      };
 
       //checks appropriate geocoding
       $scope.geoCodeResults = {};
@@ -200,6 +207,18 @@ module.exports = function(app) {
         angular.extend($scope, {
           markers: markers
         });
+      };
+
+      $scope.editing = function(relative, bool) {
+        relative.editing = bool;
+        if(bool) {
+          if(relative.birthDate) {
+            relative.birthDate = new Date(relative.birthDate);
+          }
+          if(relative.deathDate) {
+            relative.deathDate = new Date(relative.deathDate);
+          }
+        }
       };
     }]);
 };
