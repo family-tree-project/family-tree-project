@@ -20,7 +20,6 @@ module.exports = function(app) {
         }
       })
       .then(function(res) {
-        console.log(res.data.token);
         $cookies.put('token', res.data.token);
         $scope.getUser();   // from auth controller;
       }, function(err) {

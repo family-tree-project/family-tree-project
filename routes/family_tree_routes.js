@@ -26,6 +26,7 @@ function cypher(query,params,cb) {
 };
 
 var handleError = require(__dirname + '/../lib/error_handler');
+var convertCoords = require(__dirname + '/../lib/coords_converter');
 
 var familyTreeRouter = module.exports = exports = express.Router();
 
@@ -101,10 +102,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
           name: req.body.name,
           birthDate: req.body.birthDate,
           birthLoc: req.body.birthLoc,
-          birthCoords: req.body.birthCoords,
+          birthCoords: convertCoords(req.body.birthCoords),
           deathDate: req.body.deathDate || '',
           deathLoc: req.body.deathLoc || '',
-          deathCoords: req.body.deathCoords || '',
+          deathCoords: convertCoords(req.body.deathCoords),
           offspringNodeID: result.data[0]._id
         },
         function(err, result) {
@@ -123,10 +124,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
         name: req.body.name,
         birthDate: req.body.birthDate,
         birthLoc: req.body.birthLoc,
-        birthCoords: req.body.birthCoords,
+        birthCoords: convertCoords(req.body.birthCoords),
         deathDate: req.body.deathDate || '',
         deathLoc: req.body.deathLoc || '',
-        deathCoords: req.body.deathCoords || '',
+        deathCoords: convertCoords(req.body.deathCoords),
         parent: req.body.parents[0]
       },
       function(err, result) {
@@ -144,10 +145,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       name: req.body.name,
       birthDate: req.body.birthDate,
       birthLoc: req.body.birthLoc,
-      birthCoords: req.body.birthCoords,
+      birthCoords: convertCoords(req.body.birthCoords),
       deathDate: req.body.deathDate || '',
       deathLoc: req.body.deathLoc || '',
-      deathCoords: req.body.deathCoords || [],
+      deathCoords: convertCoords(req.body.deathCoords),
       childNodeID: req.body.children[0]
     },
     function(err, result) {
@@ -173,10 +174,10 @@ familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, r
         name: req.body.name || node.name,
         birthDate: req.body.birthDate || node.birthDate,
         birthLoc: req.body.birthLoc || node.birthLoc,
-        birthCoords: req.body.birthCoords || node.birthCoords,
-        deathDate: req.body.deathDate || node.deathDate || '',
-        deathLoc: req.body.deathLoc || node.deathLoc || '',
-        deathCoords: req.body.deathCoords || node.deathCoords || [],
+        birthCoords: convertCoords(req.body.birthCoords),
+        deathDate: req.body.deathDate || '',
+        deathLoc: req.body.deathLoc || '',
+        deathCoords: convertCoords(req.body.deathCoords),
         nodeSize: 5 //if this was previously a 'not specified' person, make its new size equal to a real person
       },
       function(err, result) {

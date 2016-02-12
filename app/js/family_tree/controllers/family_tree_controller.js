@@ -52,10 +52,7 @@ module.exports = function(app) {
             var graph = sigma.neo4j.cypher_parse(res.data.results);
             s.graph.read(graph);
 
-            // sigma.plugins.killDesign(s);
             var design = sigma.plugins.design(s);
-            // console.log(design);
-            // design.setPalette(treePalette);
             design.setStyles(treeStyles);
             design.apply();
 
@@ -106,7 +103,7 @@ module.exports = function(app) {
         .then(function(res) {
           $scope.family = res.data;
       }, function(err) {
-          console.log(err.data);
+          console.log(err);
           });
       };
 
@@ -125,9 +122,8 @@ module.exports = function(app) {
             $scope.drawTree();
             $scope.newRelative = {};
             $scope.geoCodeResults = {};
-
           }, function(err) {
-            console.log(err.data);
+            console.log(err);
           }
         );
       };
@@ -136,7 +132,10 @@ module.exports = function(app) {
         $http.put('/api/tree', relative)
           .then(function(res) {
             relative.editing = false;
-            console.log(res.data.msg);
+            $scope.getUser();
+            $scope.clearGraph();
+            $scope.drawTree();
+            $scope.geoCodeResults = {};
           },
           function(err) {
             console.log(err);
@@ -185,25 +184,24 @@ module.exports = function(app) {
           if ($scope.familyMembers[i].birthCoords) {
             var markerName = $scope.familyMembers[i].name + 'Birth';
             markers[markerName] = {
-              lng: $scope.familyMembers[i].birthCoords[1],
               lat: $scope.familyMembers[i].birthCoords[0],
+              lng: $scope.familyMembers[i].birthCoords[1],
               message: 'Name: ' + $scope.familyMembers[i].name + '<br>'
                 + 'Born: ' + $scope.familyMembers[i].birthLoc
                 + '<br>' + $scope.familyMembers[i].birthDate
             };
           }
-          if ($scope.familyMembers[i].deathCoords) {
+          if ($scope.familyMembers[i].deathCoords && $scope.familyMembers[i].deathCoords.length) {
             var markerName = $scope.familyMembers[i].name + 'Death';
             markers[markerName] = {
-              lng: $scope.familyMembers[i].deathCoords[1],
               lat: $scope.familyMembers[i].deathCoords[0],
+              lng: $scope.familyMembers[i].deathCoords[1],
               message: 'Name: ' + $scope.familyMembers[i].name + '<br>'
                 + 'Died: ' + $scope.familyMembers[i].deathLoc
                 + '<br>' + $scope.familyMembers[i].deathDate
             };
           }
         }
-        console.log(markers);
         angular.extend($scope, {
           markers: markers
         });

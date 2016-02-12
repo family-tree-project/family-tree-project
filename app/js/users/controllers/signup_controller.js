@@ -6,7 +6,6 @@ module.exports = function(app) {
     $scope.nameTaken = false;
     $scope.user = {};
     $scope.changePlacesText = 'Or SignIn';
-    console.log($location.path());
 
     $scope.passwordMatch = function(user) {
       return user.password === user.confirmation;
