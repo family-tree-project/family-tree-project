@@ -11,20 +11,24 @@ process.env.GRAPHENEDB_URL = process.env.GRAPHENEDB_URL
   || 'http://' + process.env.NEO4J_USERNAME + ':' + process.env.NEO4J_PASSWORD + '@localhost:7474';
 var db = new node_neo4j(process.env.GRAPHENEDB_URL);
 
+/* Setup for using our own request for cypher queries.
+    Allows for more details to be returned (currently for family-tree rendering). */
+var r = require("request");
+var txUrl = process.env.GRAPHENEDB_URL + '/db/data/transaction/commit';
+function cypher(query,params,cb) {
+  r.post({uri:txUrl,
+          json:{statements:[{
+            statement:query,
+            resultDataContents: ['row', 'graph'],
+            includeStats: true,
+            parameters:params}]}},
+         function(err,res) { cb(err,res.body)})
+};
+
 var handleError = require(__dirname + '/../lib/error_handler');
+var convertCoords = require(__dirname + '/../lib/coords_converter');
 
 var familyTreeRouter = module.exports = exports = express.Router();
-
-/*
-Routes needed:
-GET     - show example trees for non-users
-GET     - show a user's own tree
-POST    - create user node on sign-in
-POST    - create family-member nodes from user input
-PUT     - change nodes from user input
-DELETE  - remove nodes from user input
-DELETE  - remove all nodes related to user if account is deleted
-*/
 
 //default
 familyTreeRouter.get('/', function(req, res) {
@@ -37,9 +41,6 @@ familyTreeRouter.get('/', function(req, res) {
   });
 });
 
-// NODE           (identifier:Schema {prop: value})
-// RELATIONSHIP   -[identifier:RELATIONSHIP_TYPE {prop: value}]-> (arrow indicates directed relationship)
-// ASSIGN PATTERN identifier = (:Schema)-[:TYPE]->(:Schema2)
 var queries = function() {
   var node_params = "name: {name},"
     + "birthDate: {birthDate},"
@@ -58,8 +59,12 @@ var queries = function() {
       "MATCH (p1)-[]->(onode)<-[]-(p2) "
         + "WHERE id(p1)={parent1} AND id(p2)={parent2} "
         + "RETURN onode",
+    //For getting only nodes that represent family members
     findFamily:
       "MATCH (p:Person)-[*0..]-(:User {username: {username}}) RETURN p",
+    //For getting data to draw the family tree
+    findTree:
+      "MATCH (n)-[r*0..]-(:User {username: {username}}) RETURN n,r",
     //When only one parent is specified, create an unspecified parent and new offspring node
     createNodeWithOneParent:
       "MATCH (p) WHERE id(p)={parent} "
@@ -97,10 +102,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
           name: req.body.name,
           birthDate: req.body.birthDate,
           birthLoc: req.body.birthLoc,
-          birthCoords: req.body.birthCoords,
+          birthCoords: convertCoords(req.body.birthCoords),
           deathDate: req.body.deathDate || '',
           deathLoc: req.body.deathLoc || '',
-          deathCoords: req.body.deathCoords || '',
+          deathCoords: convertCoords(req.body.deathCoords),
           offspringNodeID: result.data[0]._id
         },
         function(err, result) {
@@ -119,10 +124,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
         name: req.body.name,
         birthDate: req.body.birthDate,
         birthLoc: req.body.birthLoc,
-        birthCoords: req.body.birthCoords,
+        birthCoords: convertCoords(req.body.birthCoords),
         deathDate: req.body.deathDate || '',
         deathLoc: req.body.deathLoc || '',
-        deathCoords: req.body.deathCoords || '',
+        deathCoords: convertCoords(req.body.deathCoords),
         parent: req.body.parents[0]
       },
       function(err, result) {
@@ -140,10 +145,10 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
       name: req.body.name,
       birthDate: req.body.birthDate,
       birthLoc: req.body.birthLoc,
-      birthCoords: req.body.birthCoords,
+      birthCoords: convertCoords(req.body.birthCoords),
       deathDate: req.body.deathDate || '',
       deathLoc: req.body.deathLoc || '',
-      deathCoords: req.body.deathCoords || [],
+      deathCoords: convertCoords(req.body.deathCoords),
       childNodeID: req.body.children[0]
     },
     function(err, result) {
@@ -158,17 +163,21 @@ familyTreeRouter.post('/tree', jsonParser, authenticat.tokenAuth, function(req, 
 
 //Update a family member's data
 familyTreeRouter.put('/tree', jsonParser, authenticat.tokenAuth, function(req, res) {
-  db.readNode(req.body.id, function(err, node) {
-    db.updateNode(req.body.id,
+  db.readNode(req.body._id, function(err, node) {
+    if(err) {
+      return handleError(err, res, 500);
+    }
+
+    db.updateNodeById(node._id,
       {
         //db.updateNode replaces the node while keeping its ID, so all fields need to be assigned to avoid losing any
         name: req.body.name || node.name,
         birthDate: req.body.birthDate || node.birthDate,
         birthLoc: req.body.birthLoc || node.birthLoc,
-        birthCoords: req.body.birthCoords || node.birthCoords,
-        deathDate: req.body.deathDate || node.deathDate,
-        deathLoc: req.body.deathLoc || node.deathLoc,
-        birthCoords: req.body.birthCoords || node.birthCoords,
+        birthCoords: convertCoords(req.body.birthCoords),
+        deathDate: req.body.deathDate || '',
+        deathLoc: req.body.deathLoc || '',
+        deathCoords: convertCoords(req.body.deathCoords),
         nodeSize: 5 //if this was previously a 'not specified' person, make its new size equal to a real person
       },
       function(err, result) {
@@ -214,5 +223,12 @@ familyTreeRouter.post('/user-tree', jsonParser, authenticat.tokenAuth, function(
         return res.json({data: result.data});
       });
     }
+  });
+});
+
+//Route to get data for drawing tree from back-end
+familyTreeRouter.post('/draw-tree', jsonParser, authenticat.tokenAuth, function(req, res) {
+  cypher(queries.findTree, {username: req.body.username}, function(err, result) {
+    return res.json({results: result});
   });
 });
