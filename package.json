@@ -1,6 +1,6 @@
 {
   "name": "family-tree-project",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A family tree visualizer and story map generator",
   "main": "index.js",
   "directories": {
